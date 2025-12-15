@@ -1,5 +1,6 @@
+import pygame
+
 def main(): 
-    import pygame
 
 
     def create_main_surface():
@@ -13,7 +14,13 @@ def main():
 
     screen_size = create_main_surface()
     # Create window with given size
+    screen = pygame.display.set_mode(screen_size)
+    pygame.display.set_caption("Bloon Crackers")
+    # Create window with given size
     while True:
-        pygame.display.set_mode(screen_size)
-
+        screen.fill((80, 150, 200))  # fills with blue
+        pygame.display.flip()
+        pygame.event.pump()
 main()
+
+
