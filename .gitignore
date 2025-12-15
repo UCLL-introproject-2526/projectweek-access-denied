@@ -217,13 +217,13 @@ __marimo__/
 
 
 
-.jpg
-.jpeg
-.png
-.wav
-.mp3
-.ogg
-.midi
-.zip
-.7z
-.rar
+*.jpg
+*.jpeg
+*.png
+*.wav
+*.mp3
+*.ogg
+*.midi
+*.zip
+*.7z
+*.rar
