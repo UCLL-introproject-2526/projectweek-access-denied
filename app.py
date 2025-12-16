@@ -1,27 +1,55 @@
-def main(): 
-    import pygame
+import pygame
 
+pygame.init()
+screen_size = (600, 720)
+screen = pygame.display.set_mode(screen_size)
+clock = pygame.time.Clock()
 
-    def create_main_surface():
-        pygame.init() #initialize Pygame
-        screen_size = (1024, 768) # Tuple representing width and height in pixels
-        screen = pygame.display.set_mode(screen_size)
-        return screen
+#afbeeldingen zijn gemaakt met draw io de breete is 9 vakken en op de uiteinden 3 vakken
+fig1 = pygame.image.load("img/spike_left.webp") # dit maakt de variable
+fig1 = pygame.transform.scale(fig1, (600, 700)) # dit bepaald de schaal
 
-    screen = create_main_surface() # Create window with given size
-    balloon = pygame.image.load("ballon.png")
-    balloon = pygame.transform.scale(balloon, (100, 150))  # breedte, hoogte
+fig2 = pygame.image.load("img/spike_right.webp") # dit maakt de variable
+fig2 = pygame.transform.scale(fig2, (600, 700)) # dit bepaald de schaal
 
+balloon = pygame.image.load("img/balloon.jpg")
+balloon = pygame.transform.scale(balloon, (100, 150))  # breedte, hoogte
+x, y = 450, 500 # begin positie
 
-    
-    running = True
-    while running:
-        for event in pygame.event.get(): # om het spel af te sluiten
-            if event.type == pygame.QUIT:# dit ook
-                running = False # dit ook
-        screen.fill((50, 100, 180)) # de achtergrond een kleur geven
-        screen.blit(balloon, (450, 500)) # de afbeelding op het scherm zetten
-        pygame.display.flip() # ververst het scherm
-    pygame.quit() # ook nog om het spel af te sluiten
+figures = [
+    {"image": fig1, "x": 0, "y": 10}, # centreren doe je door (1024-500)/2    ;;//;; de 500 is de afbeelding grote
+    {"image": fig2, "x": 0, "y": -685} # start boven fig1
+]
+speed = 1.5 # de snelheid van de beweging aanpassen
+SPeed = 3
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-main()
+    screen.fill((255,255,255))  # achtergrond zwart
+
+    for fig in figures:
+        fig["y"] += SPeed # dit zorgt dat het naar beneden beweegd
+
+        # opnieuw bovenaan als onderkant scherm bereikt
+        if fig["y"] > 720:
+            fig["y"] = -665  # hoogte van de afbeelding dit moet iets kleiner zijn om gaten te voorkomen tussen de twee
+
+        if x > 920: # de rechter kant limiteren voor de beweging van de ballon
+            x = 920
+        if x < 10: # de linker kant limiteren voor de beweging van de ballon
+            x = 10
+        keys = pygame.key.get_pressed() # lijkt op een dict maar werkt betje anders
+        if keys[pygame.K_LEFT]: # K_LEFT is voor pijltje links
+            x -= speed
+        if keys[pygame.K_RIGHT]: # K_RIGHT is voor pijltje rechts
+            x += speed
+        screen.blit(fig["image"], (fig["x"], fig["y"])) # dit tekend je afbeeldingen
+        screen.blit(balloon, (x, y)) # de afbeelding op het scherm zetten
+
+    pygame.display.flip() # dit laat wat je hebt gevraagd
+    clock.tick(60)  # 60 FPS dit zorgt er voor dat er geen extra probleemen zijn door een stabiele frame rate
+
+pygame.quit()
