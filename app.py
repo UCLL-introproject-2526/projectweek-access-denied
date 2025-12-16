@@ -1,6 +1,10 @@
 import pygame
+from pygame import mixer
 
 pygame.init()
+
+
+
 screen_size = (600, 720)
 screen = pygame.display.set_mode(screen_size)
 background = pygame.image.load("images/sky.jpg").convert()
@@ -24,6 +28,12 @@ figures = [
 ]
 speed = 1.25 # de snelheid van de beweging aanpassen
 SPeed = 3
+
+music = "sound/Floating-Dreams.mp3"
+kill_sound = "sound/balloon-pop.mp3"
+
+mixer.music.load(music)
+mixer.music.play(-1)  # -1 zorgt dat het blijft loopen
 running = True
 while running:
     for event in pygame.event.get():
