@@ -26,14 +26,10 @@ figures = [
     {"image": fig1, "x": 0, "y": 10}, # centreren doe je door (1024-500)/2    ;;//;; de 500 is de afbeelding grote
     {"image": fig2, "x": 0, "y": -685} # start boven fig1
 ]
-speed = 1.25 # de snelheid van de beweging aanpassen
-SPeed = 3
+speed = 2 # de snelheid van de beweging aanpassen
+SPeed = 5
 
-music = "sound/Floating-Dreams.mp3"
-kill_sound = "sound/balloon-pop.mp3"
 
-mixer.music.load(music)
-mixer.music.play(-1)  # -1 zorgt dat het blijft loopen
 running = True
 while running:
     for event in pygame.event.get():
@@ -45,7 +41,15 @@ while running:
 
     for fig in figures:
         fig["y"] += SPeed # dit zorgt dat het naar beneden beweegd
+        
+        # Alleen het bovenste deel van de ballon gebruiken voor de hitbox
+        balloon_hitbox_height = 50  # bijvoorbeeld: bovenste 70 pixels van 100
+        balloon_crop = pygame.Surface((44, balloon_hitbox_height), pygame.SRCALPHA)
+        balloon_crop.blit(balloon, (0, 0), (0, 0, 44, balloon_hitbox_height))
+        balloon_mask = pygame.mask.from_surface(balloon_crop)
 
+        fig_mask = pygame.mask.from_surface(fig["image"])
+        offset = (fig["x"] - x, fig["y"] - y)
         # opnieuw bovenaan als onderkant scherm bereikt
         if fig["y"] > 720:
             fig["y"] = -665  # hoogte van de afbeelding dit moet iets kleiner zijn om gaten te voorkomen tussen de twee
@@ -54,6 +58,8 @@ while running:
             x = 920
         if x < 10: # de linker kant limiteren voor de beweging van de ballon
             x = 10
+        if balloon_mask.overlap(fig_mask, offset):
+            screen.fill((255,0,0)) # rood scherm bij botsing
         keys = pygame.key.get_pressed() # lijkt op een dict maar werkt betje anders
         if keys[pygame.K_LEFT]: # K_LEFT is voor pijltje links
             x -= speed
