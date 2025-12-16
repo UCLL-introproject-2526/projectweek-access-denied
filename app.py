@@ -22,11 +22,10 @@ balloon = pygame.image.load("images/red-balloon.png").convert_alpha()
 balloon.set_colorkey((255, 255, 255))
 
 # game variables
-game_paused = False
 
 
 # define fonts
-font = pygame.font.SysFont("arialblack", 40)
+font = pygame.font.Font(None, size=30)
 
 # define colors
 text_col = (0,0,0)
@@ -39,6 +38,7 @@ def draw_text(text, font, text_col, x, y):
 # function to complete actions while game is running
 def main_menu():
     game_paused = False
+    main_game = True
 
     pause_overlay = pygame.Surface((560, 720), pygame.SRCALPHA)
     pause_overlay.fill((0, 0, 0, 150))
@@ -53,6 +53,21 @@ def main_menu():
 
         # background
         screen.blit(BG, (0,0))
+
+        hitbox = pygame.Rect(280 - balloon.get_width() // 2, int(y) - balloon.get_height() // 2, balloon.get_width(), balloon.get_height()) 
+
+
+        target = pygame.Rect(200,0,160,100)
+
+        collision = hitbox.colliderect(target)
+
+        pygame.draw.rect(screen,(255 * collision,255,0),target)
+
+
+
+        # while main_game == True:
+
+        
 
         # events
         for event in pygame.event.get():
