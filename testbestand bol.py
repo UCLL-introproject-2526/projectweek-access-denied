@@ -12,6 +12,8 @@ pygame.display.set_caption("Balloon Game")
 clock = pygame.time.Clock()
 
 # background
+MENU_BG = pygame.image.load('achtergrond_1.jpg').convert()
+MENU_BG = pygame.transform.scale(MENU_BG, (WIDTH, HEIGHT))
 BG = pygame.image.load('achtergrond_1.jpg')
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 
@@ -34,13 +36,14 @@ def draw_text(text, color, x, y):
 # ----------------------------------
 # BUTTONS
 # ----------------------------------
-start_button = Button(200, 180, 300, 60, "START GAME", small_font)
-quit_button = Button(200, 300, 300, 60, "QUIT", small_font)
-resume_button = Button(200, 180, 300, 60, "RESUME", small_font)
-pause_quit_button = Button(200, 260, 300, 60, "QUIT", small_font)
-restart_button = Button(200, 180, 300, 60, "RESTART", small_font)
-gameover_quit_button = Button(200, 260, 300, 60, "QUIT", small_font)
+start_button = Button(150, 250, 300, 60, "START", small_font)
+quit_button = Button(150, 340, 300, 60, "QUIT", small_font)
 
+resume_button = Button(150, 260, 300, 60, "RESUME", small_font)
+pause_quit_button = Button(150, 340, 300, 60, "QUIT", small_font)
+
+restart_button = Button(150, 260, 300, 60, "RESTART", small_font)
+gameover_quit_button = Button(150, 340, 300, 60, "QUIT", small_font)
 
 # ----------------------------------
 # GAME STATES
@@ -49,7 +52,9 @@ MENU = 0
 GAME = 1
 PAUSE = 2
 GAME_OVER = 3
+
 game_state = MENU
+
 
 # spikes setup
 spikes = []
