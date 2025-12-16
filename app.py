@@ -18,15 +18,14 @@ def render_frame(surface, y):
 clock = pygame.time.Clock()
 
 target_y = 250 # where balloon needs to stop
-balloon = pygame.image.load("images/red-balloon transparant.png").convert_alpha()
-balloon = pygame.transform.scale(balloon, (100, 218))
+balloon = pygame.image.load("images/red-balloon.png").convert_alpha()
+balloon.set_colorkey((255, 255, 255))
 
 # game variables
-game_paused = False
 
 
 # define fonts
-font = pygame.font.SysFont("arialblack", 40)
+font = pygame.font.Font(None, size=30)
 
 # define colors
 text_col = (0,0,0)
@@ -39,7 +38,7 @@ def draw_text(text, font, text_col, x, y):
 # function to complete actions while game is running
 def main_menu():
     game_paused = False
-    
+    main_game = True
 
     pause_overlay = pygame.Surface((560, 720), pygame.SRCALPHA)
     pause_overlay.fill((0, 0, 0, 150))
@@ -47,16 +46,28 @@ def main_menu():
     y = 750
     state = "rising"
     float_time = 0
-    
-    obstacle_rect = pygame.Rect(200,300,160,10)
 
-    game_over = False
     running = True
     while running:
         clock.tick(60)
 
         # background
         screen.blit(BG, (0,0))
+
+        hitbox = pygame.Rect(280 - balloon.get_width() // 2, int(y) - balloon.get_height() // 2, balloon.get_width(), balloon.get_height()) 
+
+
+        target = pygame.Rect(200,0,160,100)
+
+        collision = hitbox.colliderect(target)
+
+        pygame.draw.rect(screen,(255 * collision,255,0),target)
+
+
+
+        # while main_game == True:
+
+        
 
         # events
         for event in pygame.event.get():
@@ -67,7 +78,7 @@ def main_menu():
                 running = False
 
         # updates (only when not paused)
-        if not game_paused and not game_over:
+        if not game_paused:
             if state == "rising":
                 y -= 3
                 if y <= target_y:
@@ -79,17 +90,6 @@ def main_menu():
         
         # draw balloon
         render_frame(screen, y)
-
-
-        balloon_rect = balloon.get_rect(center=(280, int(y)))
-
-        pygame.draw.rect(screen, (82, 82, 82), obstacle_rect)
-        if balloon_rect.colliderect(obstacle_rect):
-            game_over = True
-        if game_over:
-            draw_text("GAME OVER", font, (255, 0, 0), 150, 100)
-
-
 
         # pause overlay
         if game_paused:
