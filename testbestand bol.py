@@ -1,5 +1,6 @@
 import pygame
 import math
+from buttons import Button
 
 pygame.init()
 
@@ -11,15 +12,15 @@ pygame.display.set_caption("Balloon Game")
 clock = pygame.time.Clock()
 
 # background
-BG = pygame.image.load("images/achtergrond 1.png")
+BG = pygame.image.load('achtergrond_1.jpg')
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 
 # balloon
-balloon = pygame.image.load("images/red-balloon_transparant-removebg-preview.png").convert_alpha()
+balloon = pygame.image.load("red-balloon_transparant.png").convert_alpha()
 balloon = pygame.transform.scale(balloon, (100, 218))
 
 # spike
-spike_img = pygame.image.load("images/spike.png").convert_alpha()
+spike_img = pygame.image.load("spike.png").convert_alpha()
 spike_img = pygame.transform.scale(spike_img, (40, 40))
 spike_img = pygame.transform.rotate(spike_img, 180)
 
@@ -29,6 +30,26 @@ font = pygame.font.SysFont("arialblack", 40)
 def draw_text(text, color, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
+
+# ----------------------------------
+# BUTTONS
+# ----------------------------------
+start_button = Button(200, 180, 300, 60, "START GAME", small_font)
+quit_button = Button(200, 300, 300, 60, "QUIT", small_font)
+resume_button = Button(200, 180, 300, 60, "RESUME", small_font)
+pause_quit_button = Button(200, 260, 300, 60, "QUIT", small_font)
+restart_button = Button(200, 180, 300, 60, "RESTART", small_font)
+gameover_quit_button = Button(200, 260, 300, 60, "QUIT", small_font)
+
+
+# ----------------------------------
+# GAME STATES
+# ----------------------------------
+MENU = 0
+GAME = 1
+PAUSE = 2
+GAME_OVER = 3
+game_state = MENU
 
 # spikes setup
 spikes = []
@@ -68,6 +89,13 @@ def main_game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_paused = not game_paused
+            
+            # ---------------- MENU ----------------
+        if game_state == MENU and event.type == pygame.MOUSEBUTTONDOWN:
+            if start_button.is_clicked(event):
+                game_state = GAME
+            elif quit_button.is_clicked(event):
+                running = False
 
         keys = pygame.key.get_pressed()
 
