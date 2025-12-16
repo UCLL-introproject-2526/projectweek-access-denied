@@ -1,106 +1,58 @@
 import pygame
-import math
 
 pygame.init()
-
-# res and caption of game window
-screen = pygame.display.set_mode((560, 720))
-pygame.display.set_caption("Menu")
-
-# background image
-BG = pygame.image.load("images/8666420.jpg")
-BG = pygame.transform.scale(BG, (560, 720))
-
-# balloon goes up
-def render_frame(surface, y):
-    surface.blit(balloon, (280 - balloon.get_width()//2, int(y) - balloon.get_height()//2))
-
+screen_size = (600, 720)
+screen = pygame.display.set_mode(screen_size)
+background = pygame.image.load("images/achtergrond 1.jpg").convert()
+background = pygame.transform.scale(background, (600, 720))
 clock = pygame.time.Clock()
 
-target_y = 250 # where balloon needs to stop
-balloon = pygame.image.load("images/red-balloon transparant.png").convert_alpha()
-balloon = pygame.transform.scale(balloon, (100, 218))
+#afbeeldingen zijn gemaakt met draw io de breete is 9 vakken en op de uiteinden 3 vakken
+fig1 = pygame.image.load("images/spike_left.png") # dit maakt de variable
+fig1 = pygame.transform.scale(fig1, (600, 700)) # dit bepaald de schaal
 
-# game variables
-game_paused = False
+fig2 = pygame.image.load("images/spike_right.png") # dit maakt de variable
+fig2 = pygame.transform.scale(fig2, (600, 700)) # dit bepaald de schaal
 
+balloon = pygame.image.load("images/red-balloon transparant.png")
+balloon = pygame.transform.scale(balloon, (44, 100))  # breedte, hoogte
+x, y = 450, 500 # begin positie
 
-# define fonts
-font = pygame.font.SysFont("arialblack", 40)
+figures = [
+    {"image": fig1, "x": 0, "y": 10}, # centreren doe je door (1024-500)/2    ;;//;; de 500 is de afbeelding grote
+    {"image": fig2, "x": 0, "y": -685} # start boven fig1
+]
+speed = 1.5 # de snelheid van de beweging aanpassen
+SPeed = 3
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-# define colors
-text_col = (0,0,0)
+    screen.fill((255,255,255))  # achtergrond zwart
+    screen.blit(background, (0, 0))
 
-def draw_text(text, font, text_col, x, y):
-    img = font.render(text, True, text_col)
-    screen.blit(img, (x, y))
+    for fig in figures:
+        fig["y"] += SPeed # dit zorgt dat het naar beneden beweegd
 
+        # opnieuw bovenaan als onderkant scherm bereikt
+        if fig["y"] > 720:
+            fig["y"] = -665  # hoogte van de afbeelding dit moet iets kleiner zijn om gaten te voorkomen tussen de twee
 
-# function to complete actions while game is running
-def main_menu():
-    game_paused = False
-    
+        if x > 920: # de rechter kant limiteren voor de beweging van de ballon
+            x = 920
+        if x < 10: # de linker kant limiteren voor de beweging van de ballon
+            x = 10
+        keys = pygame.key.get_pressed() # lijkt op een dict maar werkt betje anders
+        if keys[pygame.K_LEFT]: # K_LEFT is voor pijltje links
+            x -= speed
+        if keys[pygame.K_RIGHT]: # K_RIGHT is voor pijltje rechts
+            x += speed
+        screen.blit(fig["image"], (fig["x"], fig["y"])) # dit tekend je afbeeldingen
+        screen.blit(balloon, (x, y)) # de afbeelding op het scherm zetten
 
-    pause_overlay = pygame.Surface((560, 720), pygame.SRCALPHA)
-    pause_overlay.fill((0, 0, 0, 150))
+    pygame.display.flip() # dit laat wat je hebt gevraagd
+    clock.tick(60)  # 60 FPS dit zorgt er voor dat er geen extra probleemen zijn door een stabiele frame rate
 
-    y = 750
-    state = "rising"
-    float_time = 0
-    
-    obstacle_rect = pygame.Rect(200,300,160,10)
-
-    game_over = False
-    running = True
-    while running:
-        clock.tick(60)
-
-        # background
-        screen.blit(BG, (0,0))
-
-        # events
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    game_paused = not game_paused
-            if event.type == pygame.QUIT:
-                running = False
-
-        # updates (only when not paused)
-        if not game_paused and not game_over:
-            if state == "rising":
-                y -= 3
-                if y <= target_y:
-                    y = target_y
-                    state = "floating"
-            elif state == "floating":
-                float_time += 0.05
-                y = target_y + math.sin(float_time) * 10
-        
-        # draw balloon
-        render_frame(screen, y)
-
-
-        balloon_rect = balloon.get_rect(center=(280, int(y)))
-
-        pygame.draw.rect(screen, (82, 82, 82), obstacle_rect)
-        if balloon_rect.colliderect(obstacle_rect):
-            game_over = True
-        if game_over:
-            draw_text("GAME OVER", font, (255, 0, 0), 150, 100)
-
-
-
-        # pause overlay
-        if game_paused:
-            screen.blit(pause_overlay, (0, 0))
-            draw_text("PAUSED", font, (255,255,255), 200, 300)
-        else:
-            draw_text("Press ESC to pause", font, text_col, 67, 600)
-
-        pygame.display.flip()
-
-        render_frame(screen, y)
-    pygame.quit()
-
-main_menu()
+pygame.quit()
