@@ -3,18 +3,18 @@ import pygame
 pygame.init()
 screen_size = (600, 720)
 screen = pygame.display.set_mode(screen_size)
-background = pygame.image.load("images/achtergrond 1.jpg").convert()
+background = pygame.image.load("images/sky.jpg").convert()
 background = pygame.transform.scale(background, (600, 720))
 clock = pygame.time.Clock()
 
 #afbeeldingen zijn gemaakt met draw io de breete is 9 vakken en op de uiteinden 3 vakken
-fig1 = pygame.image.load("images/spike_left.png") # dit maakt de variable
+fig1 = pygame.image.load("images/spike_left.webp") # dit maakt de variable
 fig1 = pygame.transform.scale(fig1, (600, 700)) # dit bepaald de schaal
 
-fig2 = pygame.image.load("images/spike_right.png") # dit maakt de variable
+fig2 = pygame.image.load("images/spike_right.webp") # dit maakt de variable
 fig2 = pygame.transform.scale(fig2, (600, 700)) # dit bepaald de schaal
 
-balloon = pygame.image.load("images/red-balloon transparant.png")
+balloon = pygame.image.load("images/ballon.jpg")
 balloon = pygame.transform.scale(balloon, (44, 100))  # breedte, hoogte
 x, y = 450, 500 # begin positie
 
@@ -22,7 +22,7 @@ figures = [
     {"image": fig1, "x": 0, "y": 10}, # centreren doe je door (1024-500)/2    ;;//;; de 500 is de afbeelding grote
     {"image": fig2, "x": 0, "y": -685} # start boven fig1
 ]
-speed = 1.5 # de snelheid van de beweging aanpassen
+speed = 1.25 # de snelheid van de beweging aanpassen
 SPeed = 3
 running = True
 while running:
@@ -30,7 +30,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    screen.fill((255,255,255))  # achtergrond zwart
+    screen.fill((255,255,255))  # achtergrond wit
     screen.blit(background, (0, 0))
 
     for fig in figures:
