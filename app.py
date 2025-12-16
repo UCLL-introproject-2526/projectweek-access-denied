@@ -22,8 +22,8 @@ figures = [
     {"image": fig1, "x": 0, "y": 10}, # centreren doe je door (1024-500)/2    ;;//;; de 500 is de afbeelding grote
     {"image": fig2, "x": 0, "y": -685} # start boven fig1
 ]
-speed = 0.4 # de snelheid van de beweging aanpassen
-SPeed = 1
+speed = 2 # de snelheid van de beweging aanpassen
+SPeed = 5
 
 
 running = True
