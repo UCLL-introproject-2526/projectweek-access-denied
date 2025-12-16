@@ -12,9 +12,9 @@ pygame.display.set_caption("Balloon Game")
 clock = pygame.time.Clock()
 
 # background
-MENU_BG = pygame.image.load('achtergrond_1.jpg').convert()
+MENU_BG = pygame.image.load('images/achtergrond 1.jpg').convert()
 MENU_BG = pygame.transform.scale(MENU_BG, (WIDTH, HEIGHT))
-BG = pygame.image.load('achtergrond_1.jpg')
+BG = pygame.image.load('images/achtergrond 1.jpg')
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 
 # balloon
@@ -26,24 +26,9 @@ spike_img = pygame.image.load("spike.png").convert_alpha()
 spike_img = pygame.transform.scale(spike_img, (40, 40))
 spike_img = pygame.transform.rotate(spike_img, 180)
 
-# font
-font = pygame.font.SysFont("arialblack", 40)
-
 def draw_text(text, color, x, y):
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
-
-# ----------------------------------
-# BUTTONS
-# ----------------------------------
-start_button = Button(150, 250, 300, 60, "START", small_font)
-quit_button = Button(150, 340, 300, 60, "QUIT", small_font)
-
-resume_button = Button(150, 260, 300, 60, "RESUME", small_font)
-pause_quit_button = Button(150, 340, 300, 60, "QUIT", small_font)
-
-restart_button = Button(150, 260, 300, 60, "RESTART", small_font)
-gameover_quit_button = Button(150, 340, 300, 60, "QUIT", small_font)
 
 # ----------------------------------
 # GAME STATES
@@ -164,4 +149,3 @@ def main_game():
 
     pygame.quit()
 
-main_game()
