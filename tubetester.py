@@ -1,63 +1,128 @@
 import pygame
 import random
-import sys
 
 pygame.init()
 
-# Scherm instellen
-WIDTH, HEIGHT = 600, 400
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Wrench Levels")
-
-# Kleuren
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED   = (200, 0, 0)
-
-# Basisvormen (vereenvoudigd als rechthoeken en polygonen)
-def draw_wrench(x, y, with_teeth=False):
-    # Hexagon (moer)
-    hexagon = [(x, y), (x+40, y), (x+60, y+20),
-               (x+40, y+40), (x, y+40), (x-20, y+20)]
-    pygame.draw.polygon(screen, BLACK, hexagon, 2)
-
-    # Wrench body
-    pygame.draw.rect(screen, BLACK, (x-80, y+10, 60, 20), 2)
-
-    # Tanden (dodelijk)
-    if with_teeth:
-        for i in range(5):
-            pygame.draw.polygon(screen, RED, [
-                (x+60+i*10, y+20),
-                (x+65+i*10, y+10),
-                (x+70+i*10, y+20)
-            ])
-
-# Game loop
+screen_size = (600, 720)
+center_x = screen_size[0] // 2
+center_y = screen_size[1] // 2
+screen = pygame.display.set_mode(screen_size)
+background = pygame.image.load("images/sky.jpg").convert()
+background = pygame.transform.scale(background, (600, 720))
 clock = pygame.time.Clock()
+
+# Load images
+fig1 = pygame.image.load("images/spike_left.webp").convert_alpha()
+fig1 = pygame.transform.scale(fig1, (600, 700))
+
+fig2 = pygame.image.load("images/spike_right.webp").convert_alpha()
+fig2 = pygame.transform.scale(fig2, (600, 700))
+
+tube = pygame.image.load("images/straight_tube.webp").convert_alpha()
+tube = pygame.transform.scale(tube, (600, 700))
+
+balloon = pygame.image.load("images/ballon.jpg").convert_alpha()
+balloon = pygame.transform.scale(balloon, (44, 100))
+x, y = 300, 500
+
+speed = 4.5
+speed_level = 5
+
+pygame.mixer.music.load("sound/Floating-Dreams.mp3")
+pygame.mixer.music.play(-1)
+
+# --- INITIAL FIGURES ---
+# Tube at start + one spike above it
+figures = [
+    {"image": tube, "x": 0, "y": 0, "type": "tube"},
+    {"image": random.choice([fig1, fig2]), "x": 0, "y": -700, "type": "spike"}
+]
+
+score = 0
+
 running = True
-
-# Startpositie
-wrenches = [(WIDTH//2, HEIGHT//2, False)]
-
 while running:
-    screen.fill(WHITE)
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Willekeurig een nieuwe wrench toevoegen
-    if random.random() < 0.01:  # kans per frame
-        with_teeth = random.choice([True, False])
-        wrenches.append((WIDTH//2, HEIGHT//2 - len(wrenches)*60, with_teeth))
+    screen.fill((255, 255, 255))
+    screen.blit(background, (0, 0))
 
-    # Teken alle wrenches
-    for wx, wy, teeth in wrenches:
-        draw_wrench(wx, wy, with_teeth=teeth)
+    # --- MOVE AND DRAW FIGURES ---
+    for fig in list(figures):  # copy to allow removal
+        fig["y"] += speed_level
+
+        # Balloon hitbox
+        balloon_hitbox_height = 50
+        balloon_crop = pygame.Surface((44, balloon_hitbox_height), pygame.SRCALPHA)
+        balloon_crop.blit(balloon, (0, 0), (0, 0, 44, balloon_hitbox_height))
+        balloon_mask = pygame.mask.from_surface(balloon_crop)
+
+        fig_mask = pygame.mask.from_surface(fig["image"])
+        offset = (fig["x"] - x, fig["y"] - y)
+
+        # --- Spawn next spike early ---
+        if fig["type"] == "spike" and fig["y"] > 0:
+            # Check if we already have a "next" spike queued
+            if not any(f["type"] == "spike" and f["y"] < 0 for f in figures):
+                figures.append({
+                    "image": random.choice([fig1, fig2]),
+                    "x": 0,
+                    "y": -700,
+                    "type": "spike"
+                })
+
+        # --- Remove tube once it leaves ---
+        if fig["type"] == "tube" and fig["y"] > 720:
+            figures.remove(fig)
+            continue
+
+        # --- Remove spikes once they leave ---
+        if fig["type"] == "spike" and fig["y"] > 720:
+            figures.remove(fig)
+            score += 1
+            continue
+
+
+
+        # Balloon boundaries
+        if x > screen_size[0] - balloon.get_width():
+            x = screen_size[0] - balloon.get_width()
+        if x < 0:
+            x = 0
+
+        # Collision check
+        if balloon_mask.overlap(fig_mask, offset):
+            screen.fill((200, 25, 25))
+            pygame.mixer.music.stop()
+            font = pygame.font.Font(None, 74)
+            text = font.render("Game Over", True, (0, 0, 0))
+            screen.blit(text, (center_x - 100, center_y))
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            running = False
+
+        # Draw
+        screen.blit(fig["image"], (fig["x"], fig["y"]))
+
+        font = pygame.font.Font(None, 80)  # smaller font for score
+
+        # inside the main loop, after drawing everything:
+        score_text = font.render(f"{score}", True, (0, 0, 0))
+        screen.blit(score_text, (285, 10))  # top-left corner
+
+
+    # Balloon movement
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        x -= speed
+    if keys[pygame.K_RIGHT]:
+        x += speed
+
+    screen.blit(balloon, (x, y))
 
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
-sys.exit()

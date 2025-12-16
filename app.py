@@ -1,34 +1,46 @@
 import pygame
-from pygame import mixer
+import random
 
 pygame.init()
 
-
-
 screen_size = (600, 720)
+center_x = screen_size[0] // 2
+center_y = screen_size[1] // 2
 screen = pygame.display.set_mode(screen_size)
 background = pygame.image.load("images/sky.jpg").convert()
 background = pygame.transform.scale(background, (600, 720))
 clock = pygame.time.Clock()
 
-#afbeeldingen zijn gemaakt met draw io de breete is 9 vakken en op de uiteinden 3 vakken
-fig1 = pygame.image.load("images/spike_left.webp") # dit maakt de variable
-fig1 = pygame.transform.scale(fig1, (600, 700)) # dit bepaald de schaal
+# Load images with transparency support
+fig1 = pygame.image.load("images/spike_left.webp").convert_alpha()
+fig1 = pygame.transform.scale(fig1, (600, 700))
 
-fig2 = pygame.image.load("images/spike_right.webp") # dit maakt de variable
-fig2 = pygame.transform.scale(fig2, (600, 700)) # dit bepaald de schaal
+fig2 = pygame.image.load("images/spike_right.webp").convert_alpha()
+fig2 = pygame.transform.scale(fig2, (600, 700))
 
-balloon = pygame.image.load("images/ballon.jpg")
-balloon = pygame.transform.scale(balloon, (44, 100))  # breedte, hoogte
-x, y = 450, 500 # begin positie
+tube = pygame.image.load("images/straight_tube.webp").convert_alpha()
+tube = pygame.transform.scale(tube, (600, 700))
 
-figures = [
-    {"image": fig1, "x": 0, "y": 10}, # centreren doe je door (1024-500)/2    ;;//;; de 500 is de afbeelding grote
-    {"image": fig2, "x": 0, "y": -685} # start boven fig1
+balloon = pygame.image.load("images/ballon.jpg").convert_alpha()
+balloon = pygame.transform.scale(balloon, (44, 100))
+x, y = 300, 500  # start position
+
+# Options for obstacles
+options = [
+    {"image": fig1, "x": 0, "y": -700},
+    {"image": fig2, "x": 0, "y": -700}
 ]
-speed = 2 # de snelheid van de beweging aanpassen
-SPeed = 5
 
+# Start with one obstacle (tube in the middle)
+figures = [
+    {"image": tube, "x": center_x - 22, "y": y}
+]
+
+speed = 3          # balloon movement speed
+speed_level = 5    # obstacle speed
+
+pygame.mixer.music.load("sound/Floating-Dreams.mp3")
+pygame.mixer.music.play(-1)  # loop background music
 
 running = True
 while running:
@@ -36,39 +48,57 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    screen.fill((255,255,255))  # achtergrond wit
+    screen.fill((255, 255, 255))
     screen.blit(background, (0, 0))
 
     for fig in figures:
-        fig["y"] += SPeed # dit zorgt dat het naar beneden beweegd
-        
-        # Alleen het bovenste deel van de ballon gebruiken voor de hitbox
-        balloon_hitbox_height = 50  # bijvoorbeeld: bovenste 70 pixels van 100
+        fig["y"] += speed_level  # move obstacle down
+
+        # Balloon hitbox (top half only)
+        balloon_hitbox_height = 50
         balloon_crop = pygame.Surface((44, balloon_hitbox_height), pygame.SRCALPHA)
         balloon_crop.blit(balloon, (0, 0), (0, 0, 44, balloon_hitbox_height))
         balloon_mask = pygame.mask.from_surface(balloon_crop)
 
         fig_mask = pygame.mask.from_surface(fig["image"])
         offset = (fig["x"] - x, fig["y"] - y)
-        # opnieuw bovenaan als onderkant scherm bereikt
+
+        # Respawn obstacle when it leaves screen
         if fig["y"] > 720:
-            fig["y"] = -665  # hoogte van de afbeelding dit moet iets kleiner zijn om gaten te voorkomen tussen de twee
+            new = random.choice(options)  # pick random spike
+            fig["image"] = new["image"]
+            fig["x"] = new["x"]
+            fig["y"] = new["y"]  # start above the screen
 
-        if x > 920: # de rechter kant limiteren voor de beweging van de ballon
-            x = 920
-        if x < 10: # de linker kant limiteren voor de beweging van de ballon
-            x = 10
+        # Balloon boundaries
+        if x > screen_size[0] - balloon.get_width():
+            x = screen_size[0] - balloon.get_width()
+        if x < 0:
+            x = 0
+
+        # Collision check
         if balloon_mask.overlap(fig_mask, offset):
-            screen.fill((255,0,0)) # rood scherm bij botsing
-        keys = pygame.key.get_pressed() # lijkt op een dict maar werkt betje anders
-        if keys[pygame.K_LEFT]: # K_LEFT is voor pijltje links
-            x -= speed
-        if keys[pygame.K_RIGHT]: # K_RIGHT is voor pijltje rechts
-            x += speed
-        screen.blit(fig["image"], (fig["x"], fig["y"])) # dit tekend je afbeeldingen
-        screen.blit(balloon, (x, y)) # de afbeelding op het scherm zetten
+            screen.fill((200, 25, 25))
+            pygame.mixer.music.stop()
+            font = pygame.font.Font(None, 74)
+            text = font.render("Game Over", True, (0, 0, 0))
+            screen.blit(text, (center_x - 100, center_y))
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            running = False
 
-    pygame.display.flip() # dit laat wat je hebt gevraagd
-    clock.tick(60)  # 60 FPS dit zorgt er voor dat er geen extra probleemen zijn door een stabiele frame rate
+        # Balloon movement
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            x -= speed
+        if keys[pygame.K_RIGHT]:
+            x += speed
+
+        # Draw everything
+        screen.blit(fig["image"], (fig["x"], fig["y"]))
+        screen.blit(balloon, (x, y))
+
+    pygame.display.flip()
+    clock.tick(60)
 
 pygame.quit()
