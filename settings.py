@@ -11,7 +11,7 @@ def settings(current_skin):
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("arialblack", 28)
 
-    xmas_btn = Button(150, 240, 300, 50, "XMAS SKIN", font)
+    xmas_btn = Button(150, 240, 300, 50, "CHRISTMAS HAT", font)
     back_btn = Button(150, 560, 300, 50, "BACK", font)
 
     skin = current_skin
@@ -24,10 +24,12 @@ def settings(current_skin):
                 exit()
 
             if xmas_btn.is_clicked(event):
-                skin = "xmas"
+                skin = "default" if skin == "xmas" else "xmas"
 
             if back_btn.is_clicked(event):
                 return skin
+            
+        xmas_btn.dynamic_color = (0, 200, 0) if skin == "xmas" else (200, 0, 0)
 
         screen.fill((240, 240, 240))
         screen.blit(bgS, (0, 0))
