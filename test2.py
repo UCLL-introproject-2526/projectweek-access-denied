@@ -1,28 +1,90 @@
 import pygame
+import random
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
 
-image = pygame.image.load("images/red-balloon.png").convert_alpha()
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 400
 
-# Create a rect that matches the image size
-image_rect = image.get_rect()
+BALLOON_SPEED = 0.1
+OBSTACLE_SPEED = 0.03
 
-# Set position
-image_rect.topleft = (100, 150)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+pygame.display.set_caption("Dikke Nantoe Teger")
+
+font = pygame.font.Font(None, 40)
+
+
+balloon = pygame.image.load("images/balloon.png").convert_alpha()
+balloon_rect = balloon.get_rect()
+balloon_rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 10)
+balloon_x = float(balloon_rect.x)
+
+balloon_prepop = pygame.image.load("images/balloon_prepop.png")
+balloon_prepop_rect = balloon_prepop.get_rect()
+balloon_prepop_rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 10)
+balloon_prepop_x = float(balloon_prepop_rect.x)
+
+# spikes = pygame.image.load("images/spikes.png")
+# spike_rect = spikes.get_rect()
+
+obstacle_locations = [100, 500]
+obstacle_rect = pygame.Rect(random.choice(obstacle_locations),50, 90, 25)
+obstacle_y = float(obstacle_rect.y)
+obstacle_x = float(obstacle_rect.x)
+
+text_col = (0,0,0)
+def draw_text(text, font, text_col, x, y):
+    text_msg = font.render(text, True, text_col)
+    screen.blit(text_msg, (x, y))
 
 running = True
 while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+            if event.type == pygame.QUIT:
+                running = False
+    
 
-    pos = pygame.mouse.get_pos()
-    image_rect.center = pos
+    screen.fill((0,0,0))
 
-    screen.fill((30, 30, 30))
+    col = (0, 255, 0)
+    if not balloon_rect.colliderect(obstacle_rect):
+        obstacle_y += OBSTACLE_SPEED
 
-    # Draw image using its rect
-    screen.blit(image, image_rect)
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_LEFT]:
+            balloon_x -= BALLOON_SPEED
+        if keys[pygame.K_RIGHT]:
+            balloon_x += BALLOON_SPEED
 
-    pygame.display.flip()
+        
+        if balloon_x < 0:
+            balloon_x = 0
+        if balloon_x > SCREEN_WIDTH - balloon_rect.width:
+            balloon_x = SCREEN_WIDTH - balloon_rect.width
+
+        balloon_rect.x = int(balloon_x)
+        balloon_prepop_rect.x = int(balloon_prepop_x)
+        obstacle_rect.y = int(obstacle_y)
+        obstacle_rect.x = int(obstacle_x)
+        
+        
+        pygame.draw.rect(screen,(0,0,255), obstacle_rect)
+
+        screen.blit(balloon, balloon_rect)
+        
+        pygame.display.flip()
+    
+    if balloon_rect.colliderect(obstacle_rect):
+        screen.fill((255,0,0))
+        draw_text("Game Over",font,(255,255,255),230 ,100)
+        BALLOON_SPEED = 0
+        obstacle_rect = pygame.Rect(obstacle_rect.x,obstacle_rect.y, 90, 25)
+        pygame.draw.rect(screen,(0,0,255), obstacle_rect)
+        screen.blit(balloon_prepop, balloon_rect)
+        
+        pygame.display.flip()
+
+
+pygame.quit()

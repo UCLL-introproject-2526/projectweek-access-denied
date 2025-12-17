@@ -14,7 +14,7 @@ pygame.display.set_caption("Dikke Nantoe Teger")
 font = pygame.font.Font(None, 40)
 
 
-balloon = pygame.image.load("images/red-balloon_transparant.png").convert_alpha()
+balloon = pygame.image.load("images/balloon.png").convert_alpha()
 balloon_rect = balloon.get_rect()
 balloon_rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 10)
 balloon_x = float(balloon_rect.x)
