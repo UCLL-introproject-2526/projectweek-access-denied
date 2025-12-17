@@ -147,7 +147,7 @@ def main_game(balloon_skin="normal", high_score=0):
                 x = 0
 
             # update speed
-            speed_level += 0.0001
+            speed_level += 0.0002
             speed = speed_level * 0.8
 
             # Collision check
