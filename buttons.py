@@ -6,9 +6,9 @@ class Button:
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.font = font
-        self.base_color = (159, 176, 226)
-        self.hover_color = (243, 199, 211)
-        self.text_color = (0, 0, 0)
+        self.base_color = (0, 0, 0, 150)
+        self.hover_color = (50, 50, 50, 150)
+        self.text_color = (255, 255, 255, 150)
 
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()

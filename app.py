@@ -1,16 +1,22 @@
-# app.py
 import pygame
 from menu import menu
 from game import main_game
+from settings import settings
 
 def main():
     pygame.init()
-    pygame.mixer.init()
+
+    balloon_skin = "normal"
 
     while True:
         choice = menu()
+
         if choice == "play":
-            main_game()
+            main_game(balloon_skin)
+
+        elif choice == "settings":
+            balloon_skin = settings(balloon_skin)
+
         elif choice == "quit":
             break
 
@@ -18,4 +24,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
