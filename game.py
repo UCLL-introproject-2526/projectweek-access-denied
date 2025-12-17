@@ -27,14 +27,6 @@ def main_game(balloon_skin="normal", high_score=0):
     fig5 = pygame.image.load("images/drie_eilanden_rechts.png").convert_alpha()
     fig5 = pygame.transform.scale(fig5, (600, 700))
 
-    fig6 = pygame.image.load("images/tube_spikes_left.png").convert_alpha()
-    fig6 = pygame.transform.scale(fig6, (600, 700))
-
-    fig7 = pygame.image.load("images/tube_spikes_right.png").convert_alpha()
-    fig7 = pygame.transform.scale(fig7, (600, 700))
-
-    fig8 = pygame.image.load("images/tube_spikes.png").convert_alpha()
-    fig8 = pygame.transform.scale(fig8, (600, 700))
 
     tube = pygame.image.load("images/straight_tube_texture.png").convert_alpha()
     tube = pygame.transform.scale(tube, (600, 700))
@@ -56,20 +48,24 @@ def main_game(balloon_skin="normal", high_score=0):
     speed_level = 3
 
 
+    game_music = "sound/Floating-Dreams.mp3"
+    pop_sound = "sound/balloon_pop.wav"
+
     death = 0
     prepop = 0 
 
     # Background music (optional)
     try:
-        pygame.mixer.music.load("sound/Floating-Dreams.mp3")
+        pygame.mixer.music.load(game_music)
         pygame.mixer.music.play(-1)
     except Exception:
         pass
 
     # --- INITIAL FIGURES ---
+
     figures = [
         {"image": tube, "x": 0, "y": 0, "type": "tube"},
-        {"image": random.choice([fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8]), "x": 0, "y": -700, "type": "spike"}
+        {"image": random.choice([fig1, fig2, fig3, fig4, fig5]), "x": 0, "y": -700, "type": "spike"}
     ]
 
     score = 0
@@ -101,7 +97,7 @@ def main_game(balloon_skin="normal", high_score=0):
             if fig["type"] == "spike" and fig["y"] > 0:
                 if not any(f["type"] == "spike" and f["y"] < 0 for f in figures):
                     figures.append({
-                        "image": random.choice([fig1, fig2]),
+                        "image": random.choice([fig1, fig2, fig3, fig4, fig5]),
                         "x": 0,
                         "y": -695,
                         "type": "spike"
@@ -136,6 +132,11 @@ def main_game(balloon_skin="normal", high_score=0):
 
             # Collision check
             if balloon_mask.overlap(fig_mask, offset):
+                # Play pop sound
+                try:
+                    pygame.mixer.Sound(pop_sound).play()
+                except Exception:
+                    pass
                 pygame.mixer.music.stop()
                 speed_level = 0
                 speed = 0
