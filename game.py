@@ -2,6 +2,7 @@ import pygame
 import random
 
 def main_game(balloon_skin="normal", high_score=0):
+    paused = False
     screen_size = (600, 720)
     center_x = screen_size[0] // 2
     center_y = screen_size[1] // 2
@@ -97,8 +98,30 @@ def main_game(balloon_skin="normal", high_score=0):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    paused = not paused
 
         screen.fill((255, 255, 255))
+
+        if paused:
+            screen.blit(background, (0, bg_y))
+            screen.blit(background, (0, bg_y - screen_size[1]))
+            balloon_crop.blit(balloon, (0, 0), (0, 0, 44, balloon_hitbox_height))
+            for fig in figures:
+                screen.blit(fig["image"], (fig["x"], fig["y"]))
+            screen.blit(balloon, (x, y))
+            screen.blit(score_text, (287, 20))
+
+
+            # Tekst tekenen bovenop overlay
+            font_pause = pygame.font.Font(None, 80)
+            text = font_pause.render("PAUSED", True, (255, 255, 255))
+            screen.blit(text, (center_x - 110, center_y - 40))
+
+            pygame.display.flip()
+            clock.tick(60)
+            continue
 
         # --- Scroll background ---
         bg_y += speed_level - 1
