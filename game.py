@@ -52,8 +52,8 @@ def main_game(balloon_skin="normal", high_score=0):
     death_screen = pygame.transform.scale(death_screen, (600, 720))
 
     x, y = 300, 500
-    speed = 1.6
-    speed_level = 2
+    speed = 2.2
+    speed_level = 3
 
 
     death = 0
