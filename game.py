@@ -12,13 +12,31 @@ def main_game(balloon_skin="normal", high_score=0):
     background = pygame.transform.scale(background, (600, 720))
 
     # Load images
-    fig1 = pygame.image.load("images/spike_left.png").convert_alpha()
+    fig1 = pygame.image.load("images/corridor_right_spiked.png").convert_alpha()
     fig1 = pygame.transform.scale(fig1, (600, 700))
 
-    fig2 = pygame.image.load("images/spike_right.png").convert_alpha()
+    fig2 = pygame.image.load("images/corridor_right.png").convert_alpha()
     fig2 = pygame.transform.scale(fig2, (600, 700))
 
-    tube = pygame.image.load("images/straight_tube.png").convert_alpha()
+    fig3 = pygame.image.load("images/corridor_left_2.png").convert_alpha()
+    fig3 = pygame.transform.scale(fig3, (600, 700))
+
+    fig4 = pygame.image.load("images/drie_eilanden_links.png").convert_alpha()
+    fig4 = pygame.transform.scale(fig4, (600, 700))
+
+    fig5 = pygame.image.load("images/drie_eilanden_rechts.png").convert_alpha()
+    fig5 = pygame.transform.scale(fig5, (600, 700))
+
+    fig6 = pygame.image.load("images/tube_spikes_left.png").convert_alpha()
+    fig6 = pygame.transform.scale(fig6, (600, 700))
+
+    fig7 = pygame.image.load("images/tube_spikes_right.png").convert_alpha()
+    fig7 = pygame.transform.scale(fig7, (600, 700))
+
+    fig8 = pygame.image.load("images/tube_spikes.png").convert_alpha()
+    fig8 = pygame.transform.scale(fig8, (600, 700))
+
+    tube = pygame.image.load("images/straight_tube_texture.png").convert_alpha()
     tube = pygame.transform.scale(tube, (600, 700))
 
     if balloon_skin == "xmas":
@@ -51,7 +69,7 @@ def main_game(balloon_skin="normal", high_score=0):
     # --- INITIAL FIGURES ---
     figures = [
         {"image": tube, "x": 0, "y": 0, "type": "tube"},
-        {"image": random.choice([fig1, fig2]), "x": 0, "y": -700, "type": "spike"}
+        {"image": random.choice([fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8]), "x": 0, "y": -700, "type": "spike"}
     ]
 
     score = 0
