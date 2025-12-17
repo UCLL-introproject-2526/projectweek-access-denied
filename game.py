@@ -12,7 +12,7 @@ def main_game(balloon_skin="normal"):
     clock = pygame.time.Clock()
 
     # Load images
-    fig1 = pygame.image.load("images/spike_left.png").convert_alpha()
+    fig1 = pygame.image.load("images/buitemuren_texture_both.png").convert_alpha()
     fig1 = pygame.transform.scale(fig1, (600, 700))
 
     fig2 = pygame.image.load("images/spike_right.png").convert_alpha()
@@ -68,7 +68,7 @@ def main_game(balloon_skin="normal"):
             offset = (fig["x"] - x, fig["y"] - y)
 
             # --- Spawn next spike early ---
-            if fig["type"] == "spike" and fig["y"] > 0:
+            if fig["type"] == "spike" and fig["y"] > -5:
                 # Check if we already have a "next" spike queued
                 if not any(f["type"] == "spike" and f["y"] < 0 for f in figures):
                     figures.append({
