@@ -24,10 +24,12 @@ def settings(current_skin):
                 exit()
 
             if xmas_btn.is_clicked(event):
-                skin = "xmas"
+                skin = "default" if skin == "xmas" else "xmas"
 
             if back_btn.is_clicked(event):
                 return skin
+            
+        xmas_btn.dynamic_color = (0, 200, 0) if skin == "xmas" else (200, 0, 0)
 
         screen.fill((240, 240, 240))
         screen.blit(bgS, (0, 0))
