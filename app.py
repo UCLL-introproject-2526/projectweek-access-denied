@@ -25,8 +25,8 @@ balloon = pygame.image.load("images/ballon.jpg").convert_alpha()
 balloon = pygame.transform.scale(balloon, (44, 100))
 x, y = 300, 500
 
-speed = 4.5
-speed_level = 5
+speed = 1.6
+speed_level = 2
 
 pygame.mixer.music.load("sound/Floating-Dreams.mp3")
 pygame.mixer.music.play(-1)
@@ -39,6 +39,7 @@ figures = [
 ]
 
 score = 0
+check_score = 10
 
 running = True
 while running:
@@ -82,6 +83,16 @@ while running:
         if fig["type"] == "spike" and fig["y"] > 720:
             figures.remove(fig)
             score += 1
+            if score < 30:
+                if score >= check_score:
+                    speed_level += 1
+                    speed += 0.8
+                    check_score += 10
+            if score >= 30:
+                if score >= check_score:
+                    speed_level += 1
+                    speed += 0.8
+                    check_score += 20
             continue
 
 
@@ -111,6 +122,11 @@ while running:
         # inside the main loop, after drawing everything:
         score_text = font.render(f"{score}", True, (0, 0, 0))
         screen.blit(score_text, (285, 10))  # top-left corner
+
+        # --- Increase speed every 10 points ---
+        
+
+
 
 
     # Balloon movement
