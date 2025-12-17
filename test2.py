@@ -1,10 +1,11 @@
 import pygame
+import sys
 import random
 
 pygame.init()
 
 SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 400
+SCREEN_HEIGHT = 700
 
 BALLOON_SPEED = 0.1
 OBSTACLE_SPEED = 0.03
@@ -25,13 +26,20 @@ balloon_prepop_rect = balloon_prepop.get_rect()
 balloon_prepop_rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 10)
 balloon_prepop_x = float(balloon_prepop_rect.x)
 
-# spikes = pygame.image.load("images/spikes.png")
-# spike_rect = spikes.get_rect()
+spikes_locations = [100, 400]
+spikes = pygame.image.load("images/spikes.png")
+spike_rect = spikes.get_rect()
+spike_rect.midtop = (random.choice(spikes_locations), 0)
+spike_y = float(spike_rect.y)
+spike_x = float(spike_rect.x)
 
-obstacle_locations = [100, 500]
-obstacle_rect = pygame.Rect(random.choice(obstacle_locations),50, 90, 25)
-obstacle_y = float(obstacle_rect.y)
-obstacle_x = float(obstacle_rect.x)
+# obstacle_locations = [100, 500]
+# obstacle_rect = pygame.Rect(random.choice(obstacle_locations),50, 90, 25)
+# obstacle_y = float(obstacle_rect.y)
+# obstacle_x = float(obstacle_rect.x)
+
+death_screen = pygame.image.load("images/death_screen.png")
+death_screen = pygame.transform.scale(death_screen,(600, 700))
 
 text_col = (0,0,0)
 def draw_text(text, font, text_col, x, y):
@@ -48,8 +56,8 @@ while running:
     screen.fill((0,0,0))
 
     col = (0, 255, 0)
-    if not balloon_rect.colliderect(obstacle_rect):
-        obstacle_y += OBSTACLE_SPEED
+    if not balloon_rect.colliderect(spike_rect):
+        spike_y += OBSTACLE_SPEED
 
         keys = pygame.key.get_pressed()
         
@@ -66,22 +74,23 @@ while running:
 
         balloon_rect.x = int(balloon_x)
         balloon_prepop_rect.x = int(balloon_prepop_x)
-        obstacle_rect.y = int(obstacle_y)
-        obstacle_rect.x = int(obstacle_x)
+        spike_rect.y = int(spike_y)
+        spike_rect.x = int(spike_x)
         
         
-        pygame.draw.rect(screen,(0,0,255), obstacle_rect)
-
+        # pygame.draw.rect(screen,(0,0,255), obstacle_rect)
+        screen.blit(spikes, spike_rect)
         screen.blit(balloon, balloon_rect)
         
         pygame.display.flip()
     
-    if balloon_rect.colliderect(obstacle_rect):
+    if balloon_rect.colliderect(spike_rect):
         screen.fill((255,0,0))
         draw_text("Game Over",font,(255,255,255),230 ,100)
         BALLOON_SPEED = 0
-        obstacle_rect = pygame.Rect(obstacle_rect.x,obstacle_rect.y, 90, 25)
-        pygame.draw.rect(screen,(0,0,255), obstacle_rect)
+        # obstacle_rect = pygame.Rect(obstacle_rect.x,obstacle_rect.y, 90, 25)
+        # pygame.draw.rect(screen,(0,0,255), obstacle_rect)
+        screen.blit(death_screen,(0,0))
         screen.blit(balloon_prepop, balloon_rect)
         
         pygame.display.flip()
