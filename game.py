@@ -1,6 +1,7 @@
 import pygame
 import random
-def main_game(balloon_skin="normal"):
+
+def main_game(balloon_skin="normal", high_score=0):
     screen_size = (600, 720)
     center_x = screen_size[0] // 2
     center_y = screen_size[1] // 2
@@ -9,7 +10,6 @@ def main_game(balloon_skin="normal"):
 
     background = pygame.image.load("images/sky.jpg").convert()
     background = pygame.transform.scale(background, (600, 720))
-    clock = pygame.time.Clock()
 
     # Load images
     fig1 = pygame.image.load("images/spike_left.png").convert_alpha()
@@ -27,16 +27,28 @@ def main_game(balloon_skin="normal"):
     else:
         balloon = pygame.image.load("images/balloon.png").convert_alpha()
         hat = None
-    x, y = 300, 500
 
+    balloon_prepop = pygame.image.load("images/balloon_prepop.png").convert_alpha()
+    balloon_pop = pygame.image.load("images/balloon_pop.png").convert_alpha()
+    death_screen = pygame.image.load("images/death_screen.png")
+    death_screen = pygame.transform.scale(death_screen, (600, 720))
+
+    x, y = 300, 500
     speed = 1.6
     speed_level = 2
 
-    pygame.mixer.music.load("sound/Floating-Dreams.mp3")
-    pygame.mixer.music.play(-1)
+
+    death = 0
+    prepop = 0 
+
+    # Background music (optional)
+    try:
+        pygame.mixer.music.load("sound/Floating-Dreams.mp3")
+        pygame.mixer.music.play(-1)
+    except Exception:
+        pass
 
     # --- INITIAL FIGURES ---
-    # Tube at start + one spike above it
     figures = [
         {"image": tube, "x": 0, "y": 0, "type": "tube"},
         {"image": random.choice([fig1, fig2]), "x": 0, "y": -700, "type": "spike"}
@@ -55,7 +67,7 @@ def main_game(balloon_skin="normal"):
         screen.blit(background, (0, 0))
 
         # --- MOVE AND DRAW FIGURES ---
-        for fig in list(figures):  # copy to allow removal
+        for fig in list(figures):
             fig["y"] += speed_level
 
             # Balloon hitbox
@@ -69,12 +81,11 @@ def main_game(balloon_skin="normal"):
 
             # --- Spawn next spike early ---
             if fig["type"] == "spike" and fig["y"] > 0:
-                # Check if we already have a "next" spike queued
                 if not any(f["type"] == "spike" and f["y"] < 0 for f in figures):
                     figures.append({
                         "image": random.choice([fig1, fig2]),
                         "x": 0,
-                        "y": -700,
+                        "y": -695,
                         "type": "spike"
                     })
 
@@ -92,14 +103,12 @@ def main_game(balloon_skin="normal"):
                         speed_level += 1
                         speed += 0.8
                         check_score += 10
-                if score >= 30:
+                else:
                     if score >= check_score:
                         speed_level += 1
                         speed += 0.8
                         check_score += 20
                 continue
-
-
 
             # Balloon boundaries
             if x > screen_size[0] - balloon.get_width():
@@ -109,24 +118,48 @@ def main_game(balloon_skin="normal"):
 
             # Collision check
             if balloon_mask.overlap(fig_mask, offset):
-                screen.fill((200, 25, 25))
                 pygame.mixer.music.stop()
-                font = pygame.font.Font(None, 74)
-                text = font.render("Game Over", True, (0, 0, 0))
-                screen.blit(text, (center_x - 100, center_y))
-                pygame.display.flip()
-                pygame.time.delay(2000)
-                return
+                speed_level = 0
+                speed = 0
 
-            # Draw
+                # --- Show balloon prepop ---
+                screen.blit(background, (0, 0))
+                screen.blit(balloon_prepop, (x, y))
+                for fig in figures:
+                    screen.blit(fig["image"], (fig["x"], fig["y"]))
+                pygame.display.flip()
+                pygame.time.wait(25)
+
+                # --- Show balloon pop ---
+                screen.blit(background, (0, 0))
+                screen.blit(balloon_pop, (x, y))
+                for fig in figures:
+                    screen.blit(fig["image"], (fig["x"], fig["y"]))
+                pygame.display.flip()
+                pygame.time.wait(1000)
+
+                # --- Show death screen ---
+                screen.blit(death_screen, (0, 0))
+                pygame.display.flip()
+                pygame.time.wait(2000)
+
+                # after sequence, just pass control back to loop end
+                pass
+
+                
+
+                # Update high score before returning
+                if score > high_score:
+                    high_score = score
+                return score, high_score
+
+            # Draw obstacle
             screen.blit(fig["image"], (fig["x"], fig["y"]))
 
-            font = pygame.font.Font(None, 80)  # smaller font for score
-
-            # inside the main loop, after drawing everything:
-            score_text = font.render(f"{score}", True, (0, 0, 0))
-            screen.blit(score_text, (285, 10))  # top-left corner
-
+        # --- HUD ---
+        font_hud = pygame.font.Font(None, 60)
+        score_text = font_hud.render(f"{score}", True, (255, 255, 255))
+        screen.blit(score_text, (287, 20))
 
         # Balloon movement
         keys = pygame.key.get_pressed()
@@ -135,11 +168,21 @@ def main_game(balloon_skin="normal"):
         if keys[pygame.K_RIGHT]:
             x += speed
 
+        # Draw balloon (with optional hat)
         if hat:
             screen.blit(balloon, (x, y))
-            screen.blit(hat, (x+3, y - 30))
+            screen.blit(hat, (x + 3, y - 30))
         else:
             screen.blit(balloon, (x, y))
 
         pygame.display.flip()
         clock.tick(60)
+
+    # If window closed during loop, finalize and return
+    try:
+        pygame.mixer.music.stop()
+    except Exception:
+        pass
+    if score > high_score:
+        high_score = score
+    return score, high_score

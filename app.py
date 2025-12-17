@@ -7,12 +7,15 @@ def main():
     pygame.init()
 
     balloon_skin = "normal"
+    high_score = 0
+    last_score = None
 
     while True:
-        choice = menu()
+        # geef laatste score en high score mee aan menu
+        choice = menu(score=last_score, high_score=high_score)
 
         if choice == "play":
-            main_game(balloon_skin)
+            last_score, high_score = main_game(balloon_skin)
 
         elif choice == "settings":
             balloon_skin = settings(balloon_skin)

@@ -11,7 +11,7 @@ def settings(current_skin):
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("arialblack", 28)
 
-    xmas_btn = Button(150, 240, 300, 50, "XMAS SKIN", font)
+    xmas_btn = Button(150, 240, 300, 50, "CHRISTMAS HAT", font)
     back_btn = Button(150, 560, 300, 50, "BACK", font)
 
     skin = current_skin
