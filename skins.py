@@ -11,15 +11,15 @@ def skin(current_skin):
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("arialblack", 28)
 
-    normal_btn = Button(150, 240, 300, 50, "NORMAL SKIN: ON", font)
-    xmas_btn   = Button(150, 320, 300, 50, "XMAS HAT: OFF", font)
-    blue_btn   = Button(150, 400, 300, 50, "BLUE SKIN: OFF", font)
-    green_btn  = Button(150, 480, 300, 50, "GREEN SKIN: OFF", font)
-    purple_btn = Button(150, 560, 300, 50, "PURPLE SKIN: OFF", font)
-    white_btn  = Button(150, 640, 300, 50, "WHITE SKIN: OFF", font)
-    back_btn = Button(150, 700, 300, 50, "BACK", font)
+    normal_btn = Button(150, 140, 300, 50, "NORMAL SKIN: ON", font)
+    xmas_btn   = Button(150, 220, 300, 50, "XMAS HAT: OFF", font)
+    blue_btn   = Button(150, 300, 300, 50, "BLUE SKIN: OFF", font)
+    green_btn  = Button(150, 380, 300, 50, "GREEN SKIN: OFF", font)
+    purple_btn = Button(150, 460, 300, 50, "PURPLE SKIN: OFF", font)
+    white_btn  = Button(150, 540, 300, 50, "WHITE SKIN: OFF", font)
+    back_btn = Button(150, 600, 300, 50, "BACK", font)
 
-    skin = current_skin
+    balloon_skin = current_skin
     while True:
         clock.tick(60)
 
@@ -29,44 +29,44 @@ def skin(current_skin):
                 exit()
 
             if normal_btn.is_clicked(event):
-                skin = "normal"
+                balloon_skin = "normal"
             
             if xmas_btn.is_clicked(event):
-                skin = "normal" if skin == "xmas" else "xmas"
+                balloon_skin = "normal" if balloon_skin == "xmas" else "xmas"
 
             if blue_btn.is_clicked(event):
-                skin = "normal" if skin == "blue" else "blue"
+                balloon_skin = "normal" if balloon_skin == "blue" else "blue"
 
             if green_btn.is_clicked(event):
-                skin = "normal" if skin == "green" else "green"
+                balloon_skin = "normal" if balloon_skin == "green" else "green"
 
             if purple_btn.is_clicked(event):
-                skin = "normal" if skin == "purple" else "purple"
+                balloon_skin = "normal" if balloon_skin == "purple" else "purple"
 
             if white_btn.is_clicked(event):
-                skin = "normal" if skin == "white" else "white"
+                balloon_skin = "normal" if balloon_skin == "white" else "white"
 
             if back_btn.is_clicked(event):
-                return skin
+                return balloon_skin
 
-        normal_btn.dynamic_color = (0, 200, 0) if skin == "normal" else (200, 0, 0)
-        xmas_btn.dynamic_color = (0, 200, 0) if skin == "xmas" else (200, 0, 0)
-        blue_btn.dynamic_color = (0, 200, 0) if skin == "blue" else (200, 0, 0)
-        green_btn.dynamic_color = (0, 200, 0) if skin == "green" else (200, 0, 0)
-        purple_btn.dynamic_color = (0, 200, 0) if skin == "purple" else (200, 0, 0)
-        white_btn.dynamic_color = (0, 200, 0) if skin == "white" else (200, 0, 0)
+        normal_btn.dynamic_color = (0, 200, 0) if balloon_skin == "normal" else (200, 0, 0)
+        xmas_btn.dynamic_color = (0, 200, 0) if balloon_skin == "xmas" else (200, 0, 0)
+        blue_btn.dynamic_color = (0, 200, 0) if balloon_skin == "blue" else (200, 0, 0)
+        green_btn.dynamic_color = (0, 200, 0) if balloon_skin == "green" else (200, 0, 0)
+        purple_btn.dynamic_color = (0, 200, 0) if balloon_skin == "purple" else (200, 0, 0)
+        white_btn.dynamic_color = (0, 200, 0) if balloon_skin == "white" else (200, 0, 0)
 
-        xmas_btn.text = f"XMAS HAT: {'ON' if skin == 'xmas' else 'OFF'}"
-        normal_btn.text = f"NORMAL SKIN : {'ON' if skin == 'normal' else 'OFF'}"
-        blue_btn.text = f"BLUE SKIN : {'ON' if skin == 'blue' else 'OFF'}"
-        green_btn.text = f"GREEN SKIN : {'ON' if skin == 'green' else 'OFF'}"
-        purple_btn.text = f"PURPLE SKIN : {'ON' if skin == 'purple' else 'OFF'}"
-        white_btn.text = f"WHITE SKIN : {'ON' if skin == 'white' else 'OFF'}"
+        xmas_btn.text = f"XMAS HAT: {'ON' if balloon_skin == 'xmas' else 'OFF'}"
+        normal_btn.text = f"NORMAL SKIN : {'ON' if balloon_skin == 'normal' else 'OFF'}"
+        blue_btn.text = f"BLUE SKIN : {'ON' if balloon_skin == 'blue' else 'OFF'}"
+        green_btn.text = f"GREEN SKIN : {'ON' if balloon_skin == 'green' else 'OFF'}"
+        purple_btn.text = f"PURPLE SKIN : {'ON' if balloon_skin == 'purple' else 'OFF'}"
+        white_btn.text = f"WHITE SKIN : {'ON' if balloon_skin == 'white' else 'OFF'}"
 
         screen.fill((240, 240, 240))
         screen.blit(bgS, (0, 0))
         title = font.render("SELECT SKIN", True, (255, 255, 255))
-        screen.blit(title, (200, 150))
+        screen.blit(title, (200, 100))
 
         normal_btn.draw(screen)
         xmas_btn.draw(screen)
