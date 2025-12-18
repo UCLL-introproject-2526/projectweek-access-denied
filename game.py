@@ -60,6 +60,13 @@ def load_assets(screen_size=(600, 720)):
         "images/cube_spike_left_crates_right.png",
         "images/hourglass_cubes_left.png",
         "images/hourglass_cubes_right.png",
+        "images/spike_room_left.png",
+        "images/spike_room_right.png",
+        "images/tree_left.png",
+        "images/tree_right.png",
+        "images/tree_saw_left.png",
+        "images/tree_saw_right.png",
+        "images/tree.png",
     ]
 
     assets["fig_images"] = [_load(p, (600, 700)) for p in fig_paths]
