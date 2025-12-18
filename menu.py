@@ -9,13 +9,16 @@ def menu(score=0, high_score=0):
     bgM = pygame.image.load("images/main_menu_screen.png")
     bgM = pygame.transform.scale(bgM, (WIDTH, HEIGHT))
     clock = pygame.time.Clock()
-    font = pygame.font.SysFont("arialblack", 30)
-    font_settings = pygame.font.SysFont("arialblack", 10)
 
-    play_btn = Button(150, 425, 300, 50, "PLAY", font)
-    settings_btn = Button(10, 10, 100, 20, "SETTINGS", font_settings)
-    skins_btn = Button(490, 10, 100, 20, "SKINS", font_settings)
-    quit_btn = Button(150, 500, 300, 50, "QUIT", font)
+    #fonts
+    font = pygame.font.SysFont("arialblack", 30)
+    font_settings = pygame.font.SysFont("arialblack", 15)
+
+    #buttons
+    play_btn = Button(150, 425, 300, 50, "PLAY", font, (200, 50, 50))
+    settings_btn = Button(10, 10, 120, 30, "SETTINGS", font_settings,(50, 150, 250))
+    skins_btn = Button(470, 10, 120, 30, "SKINS", font_settings, (100, 250, 100))
+    quit_btn = Button(150, 500, 300, 50, "QUIT", font,(200,200,50))
 
 
     while True:
