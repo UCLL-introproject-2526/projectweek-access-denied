@@ -137,6 +137,9 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
         {"image": random.choice(fig_images), "x": 0, "y": -700, "type": "spike"}
     ]
 
+    hartje = pygame.Surface((30, 30), pygame.SRCALPHA)
+    pygame.draw.polygon(hartje, (255, 0, 0), [(15, 0), (30, 15), (15, 30), (0, 15)])
+
     score = 0
     check_score = 10
 
@@ -211,6 +214,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
                         "y": -695,
                         "type": "spike"
                     })
+                x_cord_hartje = random.randint(0, 570)
 
             # --- Remove tube once it leaves ---
             if fig["type"] == "tube" and fig["y"] > 720:
@@ -274,6 +278,8 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
 
             # Draw obstacle
             screen.blit(fig["image"], (fig["x"], fig["y"]))
+            # Draw hartje at random positions
+            screen.blit(hartje, (x_cord_hartje), fig["y"] + 350)
 
             # --- DEBUG OVERLAY: markers and rects to help visualise positions ---
             if debug:
