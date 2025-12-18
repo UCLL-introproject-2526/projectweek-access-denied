@@ -2,6 +2,9 @@ import pygame
 import random
 
 
+
+
+
 def load_assets(screen_size=(600, 720)):
     """Load game assets with safe fallbacks and return an assets dict.
     This loader avoids calling convert/convert_alpha so it can be used before a
@@ -71,13 +74,24 @@ def load_assets(screen_size=(600, 720)):
     return assets
 
 
-def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, sfx_on=True):
+def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     paused = False
     screen_size = (600, 720)
     center_x = screen_size[0] // 2
     center_y = screen_size[1] // 2
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
+
+    try:
+        with open("high_score.txt", "r") as f:
+            high_score = int(f.read())
+    except Exception:
+            high_score = 0
+
+    # Custom event that fires every 1000 ms (1 second)
+    SCORE_EVENT = pygame.USEREVENT + 1
+    pygame.time.set_timer(SCORE_EVENT, 20)
+
 
     # Use provided assets or load them now (loader avoids convert calls)
     if assets is None:
@@ -171,6 +185,8 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                     paused = not paused
                 elif event.key == pygame.K_d:
                     debug = not debug
+            if event.type == SCORE_EVENT and not paused:
+                score += 1
 
         screen.fill((255, 255, 255))
 
@@ -181,7 +197,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
             for fig in figures:
                 screen.blit(fig["image"], (fig["x"], fig["y"]))
             screen.blit(balloon, (x, y))
-            screen.blit(score_text, (287, 20))
+            screen.blit(score_text, (260, 20))
 
             font_pause = pygame.font.Font(None, 80)
             text = font_pause.render("PAUSED", True, (255, 255, 255))
@@ -224,12 +240,12 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
 
             if fig["type"] == "spike" and fig["y"] > 720:
                 figures.remove(fig)
-                score += 1
 
             if x > screen_size[0] - balloon.get_width():
                 x = screen_size[0] - balloon.get_width()
             if x < 0:
                 x = 0
+                
 
             speed_level += 0.0002
             speed = speed_level * 0.8
@@ -272,7 +288,9 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
 
                 if score > high_score:
                     high_score = score
-                return score, high_score
+                    with open("high_score.txt", "w") as f:
+                        f.write(str(high_score))
+                return score
 
             # Draw obstacle
             screen.blit(fig["image"], (fig["x"], fig["y"]))
@@ -294,7 +312,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
         # --- HUD ---
         font_hud = pygame.font.Font(None, 60)
         score_text = font_hud.render(f"{score}", True, (255, 255, 255))
-        screen.blit(score_text, (287, 20))
+        screen.blit(score_text, (20, 20))
 
         # Balloon movement
         keys = pygame.key.get_pressed()
@@ -312,11 +330,3 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
 
         pygame.display.flip()
         clock.tick(60)
-
-    try:
-        pygame.mixer.music.stop()
-    except Exception:
-        pass
-    if score > high_score:
-        high_score = score
-    return score, high_score
