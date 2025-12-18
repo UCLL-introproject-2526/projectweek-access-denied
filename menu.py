@@ -11,10 +11,12 @@ def menu(score=0, high_score=0):
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("arialblack", 30)
     font_settings = pygame.font.SysFont("arialblack", 10)
+    font_how = pygame.font.SysFont("arialblack", 10)
 
     play_btn = Button(150, 425, 300, 50, "PLAY", font)
     settings_btn = Button(10, 10, 100, 20, "SETTINGS", font_settings)
     quit_btn = Button(150, 500, 300, 50, "QUIT", font)
+    how_btn = Button(500, 10, 100, 20, "HOW TO PLAY", font_how)
 
     while True:
         clock.tick(60)
@@ -31,6 +33,9 @@ def menu(score=0, high_score=0):
 
             if quit_btn.is_clicked(event):
                 return "quit"
+            
+            if how_btn.is_clicked(event):
+                return "how"
 
         screen.fill((240, 240, 240))
         screen.blit(bgM, (0, 0))
@@ -53,5 +58,7 @@ def menu(score=0, high_score=0):
         play_btn.draw(screen)
         settings_btn.draw(screen)
         quit_btn.draw(screen)
+        how_btn.draw(screen)
+
 
         pygame.display.flip()
