@@ -17,7 +17,7 @@ def main():
     # Load assets once and reuse them (safe loader)
     screen_size = (600, 720)
     assets = load_assets(screen_size)
-    loade()
+    #loade()
     while True:
         # geef laatste score en high score mee aan menu
         choice = menu(score=last_score, high_score=high_score)

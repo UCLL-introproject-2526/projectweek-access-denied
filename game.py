@@ -323,15 +323,15 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                     last_hit_time = current_time
                     lives -= 1  # verlies 1 leven
 
-                    if sfx_on:
-                        try:
-                            pygame.mixer.Sound("sound/balloon-pop.wav").play()
-                        except Exception:
-                            pass
-
                     # --- PLAYER IS NOG LEVEND ---
+  
                     if lives > 0:
                         knockback = speed_level * 20
+                        if sfx_on:
+                            try:
+                                pygame.mixer.Sound("sound/balloon-inflation.wav").play()
+                            except Exception:
+                                pass
                         for f in figures:
                             f["y"] -= knockback
                             f["y"] = max(f["y"], -720)
@@ -339,6 +339,8 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
             # --- DEATH CHECK PAS HIER ---
             if lives <= 0:
                 # toon prepop en pop
+                pygame.mixer.Sound("sound/balloon-pop.wav").play()
+                pygame.mixer.music.stop()
                 screen.blit(background, (0, bg_y))
                 screen.blit(background, (0, bg_y - screen_size[1]))
                 screen.blit(balloon_prepop, (x, y))
@@ -360,12 +362,16 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 pygame.display.flip()
                 pygame.time.wait(2000)
 
+                # update last score
+                with open("last_score.txt", "w") as f:
+                    f.write(str(score))
+
                 # update high score
                 if score > high_score:
                     high_score = score
                     with open("high_score.txt", "w") as f:
                         f.write(str(high_score))
-                return score
+                return
 
             # Draw obstacle
             screen.blit(fig["image"], (fig["x"], fig["y"]))
