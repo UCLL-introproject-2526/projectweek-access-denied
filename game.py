@@ -189,11 +189,13 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     check_score = 10
 
     # --- LIVES ---
-    max_lives = 5
-    lives = 2
+    max_lives = 3
+    lives = 3
     level = 1
     last_hit_time = 0
     hit_invincibility_duration = 2000  # ms = 1 seconde
+    invincible = False
+    original_speed = speed_level
 
 
 
@@ -294,7 +296,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                     "y": -40,
                     "type": "heart"
                 })
-                last_heart_spawn = current_time
+            last_heart_spawn = current_time
 
 
             # Balloon boundaries
@@ -322,21 +324,24 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 current_time = pygame.time.get_ticks()
                 if current_time - last_hit_time >= hit_invincibility_duration:
                     last_hit_time = current_time
-                    lives -= 1  # verlies 1 leven
+                    lives -= 1
 
-                    # --- PLAYER IS NOG LEVEND ---
-  
                     if lives > 0:
-                        knockback = speed_level * 20
+                            # Slow down speed during invincibility
+                        original_speed = speed_level
+                        speed_level = max(1, speed_level // 2)  # halve speed
+                        invincible = True
+
+                        # Play SFX
                         if sfx_on:
                             try:
                                 pygame.mixer.Sound("sound/balloon-inflation.wav").play()
                             except Exception:
                                 pass
-                        for f in figures:
-                            f["y"] -= knockback
-                            f["y"] = max(f["y"], -720)
-
+            # Restore speed after invincibility ends
+            if invincible and pygame.time.get_ticks() - last_hit_time >= hit_invincibility_duration:
+                speed_level = original_speed
+                invincible = False
             # --- DEATH CHECK PAS HIER ---
             if lives <= 0:
                 # toon prepop en pop
