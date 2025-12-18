@@ -288,50 +288,58 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
             if balloon_mask.overlap(fig_mask, offset):
                 current_time = pygame.time.get_ticks()
 
-                if current_time - last_hit_time < hit_invincibility_duration:
-                    continue  # nog invincible → negeer hit
+                can_take_damage = (
+                    current_time - last_hit_time >= hit_invincibility_duration
+                )
 
-                last_hit_time = current_time
-                lives -= 1
+                if can_take_damage:
+                    last_hit_time = current_time
+                    lives -= 1
 
-                if sfx_on:
-                    try:
-                        pygame.mixer.Sound("sound/balloon-pop.wav").play()
-                    except Exception:
-                        pass
+                    if sfx_on:
+                        try:
+                            pygame.mixer.Sound("sound/balloon-pop.wav").play()
+                        except Exception:
+                            pass
 
-                if lives > 0:
-                    knockback = speed_level * 20
-                    # knockback = min(speed_level * 20, 120)
-                    for f in figures:
-                        f["y"] -= knockback
-                        f["y"] = max(f["y"], -720)
-                    continue
-                    
+                    # --- PLAYER STILL ALIVE ---
+                    if lives > 0:
+                        knockback = speed_level * 20
 
+                        for f in figures:
+                            f["y"] -= knockback
+                            f["y"] = max(f["y"], -720)
+
+                    # --- PLAYER DEAD ---
+                    else:
+                        try:
+                            pygame.mixer.music.stop()
+                        except Exception:
+                            pass
 
 
 
                 # --- Show balloon prepop ---
-                screen.blit(background, (0, bg_y))
-                screen.blit(background, (0, bg_y - screen_size[1]))
-                screen.blit(balloon_prepop, (x, y))
-                for f in figures:
-                    screen.blit(f["image"], (f["x"], f["y"]))
-                pygame.display.flip()
-                pygame.time.wait(25)
-
-                # --- Show balloon pop ---
-                screen.blit(background, (0, bg_y))
-                screen.blit(background, (0, bg_y - screen_size[1]))
-                screen.blit(balloon_pop, (x, y))
-                for f in figures:
-                    screen.blit(f["image"], (f["x"], f["y"]))
-                pygame.display.flip()
-                pygame.time.wait(1000)
-
-                # --- Show death screen ---
                 if lives <= 0:
+                    screen.blit(background, (0, bg_y))
+                    screen.blit(background, (0, bg_y - screen_size[1]))
+                    screen.blit(balloon_prepop, (x, y))
+                    for f in figures:
+                        screen.blit(f["image"], (f["x"], f["y"]))
+                    pygame.display.flip()
+                    pygame.time.wait(25)
+
+                    # --- Show balloon pop ---
+                    screen.blit(background, (0, bg_y))
+                    screen.blit(background, (0, bg_y - screen_size[1]))
+                    screen.blit(balloon_pop, (x, y))
+                    for f in figures:
+                        screen.blit(f["image"], (f["x"], f["y"]))
+                    pygame.display.flip()
+                    pygame.time.wait(1000)
+
+                    # --- Show death screen ---
+                    
                     screen.blit(death_screen, (0, 0))
                     pygame.display.flip()
                     pygame.time.wait(2000)
