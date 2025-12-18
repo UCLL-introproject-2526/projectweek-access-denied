@@ -56,7 +56,7 @@ def load_assets(screen_size=(600, 720)):
         "images/mini_tube_spike_left.png",
         "images/mini_tube_spike_right.png",
         "images/cube_spike_left_crates_left.png",
-        "images/cube_spike_left_crates_right.png"
+        "images/cube_spike_left_crates_right.png",
         "images/hourglass_cubes_left.png",
         "images/hourglass_cubes_right.png",
     ]
