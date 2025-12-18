@@ -24,8 +24,11 @@ def load_assets(screen_size=(600, 720)):
             surf = pygame.Surface(size, pygame.SRCALPHA)
             surf.fill(fallback_color)
             return surf
+        
+    backgrounds = ["images/sky.png", "images/dungeon.png"]
 
-    assets["background"] = _load("images/dungeon.png", (w, h), alpha=False)
+    assets["background"] = _load(backgrounds[1], (w, h))
+    assets["sky_background"] = _load(backgrounds[0], (w, h))
 
     fig_paths = [
         "images/corridor_right_spiked.png",
@@ -41,6 +44,7 @@ def load_assets(screen_size=(600, 720)):
         "images/cube_spike_left.png",
         "images/cube_spike_right.png",
         "images/cube_spike_right.png",
+        "images/six_seven_corridor.png"
     ]
     assets["fig_images"] = [_load(p, (600, 700)) for p in fig_paths]
 
@@ -75,6 +79,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
     # After creating a display, we can call convert/convert_alpha safely for speed
     try:
         assets["background"] = assets["background"].convert()
+        assets["sky_background"] = assets["sky_background"].convert()
     except Exception:
         pass
 
@@ -138,8 +143,6 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
         {"image": random.choice(fig_images), "x": 0, "y": -700, "type": "spike"}
     ]
 
-    hartje = pygame.Surface((30, 30), pygame.SRCALPHA)
-    pygame.draw.polygon(hartje, (255, 0, 0), [(15, 0), (30, 15), (15, 30), (0, 15)])
 
     score = 0
     check_score = 10
@@ -168,8 +171,12 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
         screen.fill((255, 255, 255))
 
         if paused:
-            screen.blit(background, (0, bg_y))
-            screen.blit(background, (0, bg_y - screen_size[1]))
+            if score < 5:
+                screen.blit(background, (0, bg_y))
+                screen.blit(background, (0, bg_y - screen_size[1]))
+            else:
+                screen.blit(assets["sky_background"], (0, bg_y))
+                screen.blit(assets["sky_background"], (0, bg_y - screen_size[1]))
             balloon_crop.blit(balloon, (0, 0), (0, 0, 44, balloon_hitbox_height))
             for fig in figures:
                 screen.blit(fig["image"], (fig["x"], fig["y"]))
@@ -186,12 +193,55 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
             clock.tick(60)
             continue
 
-        # --- Scroll background ---
-        bg_y += speed_level - 1
-        if bg_y >= screen_size[1]:
-            bg_y = 0
-        screen.blit(background, (0, bg_y))
-        screen.blit(background, (0, bg_y - screen_size[1]))
+        # --- Scroll background & transition to sky ---
+        # We maintain a small state inside `assets` so we don't need to modify
+        # code outside this block. State keys: _sky_state = {threshold, transitioning, sky_static, sky_y}
+        if "_sky_state" not in assets:
+            assets["_sky_state"] = {
+                "threshold": 1,
+                "transitioning": False,
+                "sky_static": False,
+                # start the sky *above* the screen so it can come down
+                "sky_y": -screen_size[1],
+            }
+        sky = assets["_sky_state"]
+
+        # Trigger transition once the score reaches the threshold
+        if score >= sky["threshold"] and not sky["transitioning"] and not sky["sky_static"]:
+            sky["transitioning"] = True
+            # place sky just above the screen to make it come down
+            sky["sky_y"] = -screen_size[1]
+
+        # Move sky by the same per-frame dungeon scroll amount so both stay in sync
+        # (dungeon scrolls by: bg_y += speed_level - 1)
+
+        if not sky["transitioning"] and not sky["sky_static"]:
+            # normal dungeon scrolling
+            bg_y += speed_level - 1
+            if bg_y >= screen_size[1]:
+                bg_y = 0
+            screen.blit(background, (0, bg_y))
+            screen.blit(background, (0, bg_y - screen_size[1]))
+
+        elif sky["transitioning"]:
+            # continue dungeon scrolling underneath while sky comes down
+            bg_y += speed_level - 1
+            if bg_y >= screen_size[1]:
+                bg_y = 0
+            screen.blit(background, (0, bg_y))
+            screen.blit(background, (0, bg_y - screen_size[1]))
+
+            # move sky down by the same amount the dungeon scrolls this frame; clamp when aligned
+            sky["sky_y"] += (speed_level)
+            if sky["sky_y"] >= 0:
+                sky["sky_y"] = 0
+                sky["transitioning"] = False
+                sky["sky_static"] = True
+            screen.blit(assets["sky_background"], (0, int(sky["sky_y"])))
+
+        else:
+            # sky is static and aligned
+            screen.blit(assets["sky_background"], (0, 0))
 
         # --- MOVE AND DRAW FIGURES ---
         for fig in list(figures):
@@ -215,7 +265,6 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                         "y": -695,
                         "type": "spike"
                     })
-                x_cord_hartje = random.randint(0, 570)
 
             # --- Remove tube once it leaves ---
             if fig["type"] == "tube" and fig["y"] > 720:
@@ -252,8 +301,12 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                 speed = 0
 
                 # --- Show balloon prepop ---
-                screen.blit(background, (0, bg_y))
-                screen.blit(background, (0, bg_y - screen_size[1]))
+                if score < 1:
+                    screen.blit(background, (0, bg_y))
+                    screen.blit(background, (0, bg_y - screen_size[1]))
+                else:
+                    screen.blit(assets["sky_background"], (0, bg_y))
+                    screen.blit(assets["sky_background"], (0, bg_y - screen_size[1]))
                 screen.blit(balloon_prepop, (x, y))
                 for f in figures:
                     screen.blit(f["image"], (f["x"], f["y"]))
@@ -261,8 +314,12 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                 pygame.time.wait(25)
 
                 # --- Show balloon pop ---
-                screen.blit(background, (0, bg_y))
-                screen.blit(background, (0, bg_y - screen_size[1]))
+                if score < 1:
+                    screen.blit(background, (0, bg_y))
+                    screen.blit(background, (0, bg_y - screen_size[1]))
+                else:
+                    screen.blit(assets["sky_background"], (0, bg_y))
+                    screen.blit(assets["sky_background"], (0, bg_y - screen_size[1]))
                 screen.blit(balloon_pop, (x, y))
                 for f in figures:
                     screen.blit(f["image"], (f["x"], f["y"]))
@@ -281,7 +338,6 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
             # Draw obstacle
             screen.blit(fig["image"], (fig["x"], fig["y"]))
             # Draw hartje at random positions
-            screen.blit(hartje, (x_cord_hartje), fig["y"] + 350)
 
             # --- DEBUG OVERLAY: markers and rects to help visualise positions ---
             if debug:
