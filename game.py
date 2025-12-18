@@ -216,7 +216,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
         if level >= 2 and current_time - last_heart_spawn >= heart_spawn_delay:
             figures.append({
                 "image": heart_img,
-                "x": random.randint(50, 550),
+                "x": random.randint(100, 500),
                 "y": -40,
                 "type": "heart"
             })
@@ -371,7 +371,8 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
 
         # --- DRAW LIVES ---
         for i in range(lives):
-            screen.blit(heart_img, (10 + i * 35, 10))
+            screen.blit(heart_img, (screen_size[0] - (i + 1) * 35 - 10, 10))
+
 
 
         # Balloon movement
