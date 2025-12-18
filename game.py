@@ -48,6 +48,7 @@ def load_assets(screen_size=(600, 720)):
     assets["balloon"] = _load("images/balloon.png")
     assets["balloon_prepop"] = _load("images/balloon_prepop.png")
     assets["balloon_pop"] = _load("images/balloon_pop.png")
+    assets["heart"] = _load("images/heart.png", (30, 30))
     assets["death_screen"] = _load("images/death_screen.png", (600, 720), alpha=False)
 
     # optional assets
@@ -67,6 +68,9 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
     center_y = screen_size[1] // 2
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
+    last_heart_spawn = pygame.time.get_ticks()
+    heart_spawn_delay = 10000  # 10 seconden
+
 
     # Use provided assets or load them now (loader avoids convert calls)
     if assets is None:
@@ -94,6 +98,12 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
     except Exception:
         pass
 
+    try:
+        assets["heart"] = assets["heart"].convert_alpha()
+    except Exception:
+        pass
+
+
     for key in ("balloon_prepop", "balloon_pop", "death_screen"):
         try:
             assets[key] = assets[key].convert_alpha()
@@ -111,6 +121,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
     fig_images = assets["fig_images"]
     tube = assets["tube"]
     balloon = assets["balloon"]
+    heart_img = assets["heart"]
     balloon_prepop = assets["balloon_prepop"]
     balloon_pop = assets["balloon_pop"]
     death_screen = assets["death_screen"]
@@ -140,6 +151,15 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
 
     score = 0
     check_score = 10
+
+    # --- LIVES ---
+    max_lives = 5
+    lives = 2
+    level = 1
+    last_hit_time = 0
+    hit_invincibility_duration = 1000  # ms = 1 seconde
+
+
 
     # UI & debug state
     debug = False  # toggle with D key
@@ -190,6 +210,19 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
         screen.blit(background, (0, bg_y))
         screen.blit(background, (0, bg_y - screen_size[1]))
 
+        current_time = pygame.time.get_ticks()
+
+        if level >= 2 and current_time - last_heart_spawn >= heart_spawn_delay:
+            figures.append({
+                "image": heart_img,
+                "x": random.randint(50, 550),
+                "y": -40,
+                "type": "heart"
+            })
+            last_heart_spawn = current_time
+
+
+
         # --- MOVE AND DRAW FIGURES ---
         for fig in list(figures):
             fig["y"] += speed_level
@@ -212,6 +245,11 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                         "y": -695,
                         "type": "spike"
                     })
+            
+            if fig["type"] == "heart" and fig["y"] > 720:
+                figures.remove(fig)
+                continue
+
 
             # --- Remove tube once it leaves ---
             if fig["type"] == "tube" and fig["y"] > 720:
@@ -223,6 +261,10 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                 figures.remove(fig)
                 score += 1
 
+                if score % 10 == 0:
+                    level += 1
+
+
             # Balloon boundaries
             if x > screen_size[0] - balloon.get_width():
                 x = screen_size[0] - balloon.get_width()
@@ -233,19 +275,42 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
             speed_level += 0.0002
             speed = speed_level * 0.8
 
+            if fig["type"] == "heart":
+                heart_mask = pygame.mask.from_surface(fig["image"])
+                if balloon_mask.overlap(heart_mask, offset):
+                    if lives < max_lives:
+                        lives += 1
+                    figures.remove(fig)
+                    continue
+
+
             # Collision check
             if balloon_mask.overlap(fig_mask, offset):
+                current_time = pygame.time.get_ticks()
+
+                if current_time - last_hit_time < hit_invincibility_duration:
+                    continue  # nog invincible → negeer hit
+
+                last_hit_time = current_time
+                lives -= 1
+
                 if sfx_on:
                     try:
                         pygame.mixer.Sound("sound/balloon-pop.wav").play()
                     except Exception:
                         pass
-                try:
-                    pygame.mixer.music.stop()
-                except Exception:
-                    pass
-                speed_level = 0
-                speed = 0
+
+                if lives > 0:
+                    knockback = speed_level * 20
+                    # knockback = min(speed_level * 20, 120)
+                    for f in figures:
+                        f["y"] -= knockback
+                        f["y"] = max(f["y"], -720)
+                    continue
+                    
+
+
+
 
                 # --- Show balloon prepop ---
                 screen.blit(background, (0, bg_y))
@@ -266,13 +331,14 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
                 pygame.time.wait(1000)
 
                 # --- Show death screen ---
-                screen.blit(death_screen, (0, 0))
-                pygame.display.flip()
-                pygame.time.wait(2000)
+                if lives <= 0:
+                    screen.blit(death_screen, (0, 0))
+                    pygame.display.flip()
+                    pygame.time.wait(2000)
 
-                if score > high_score:
-                    high_score = score
-                return score, high_score
+                    if score > high_score:
+                        high_score = score
+                    return score, high_score
 
             # Draw obstacle
             screen.blit(fig["image"], (fig["x"], fig["y"]))
@@ -293,6 +359,11 @@ def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, s
         font_hud = pygame.font.Font(None, 60)
         score_text = font_hud.render(f"{score}", True, (255, 255, 255))
         screen.blit(score_text, (287, 20))
+
+        # --- DRAW LIVES ---
+        for i in range(lives):
+            screen.blit(heart_img, (10 + i * 35, 10))
+
 
         # Balloon movement
         keys = pygame.key.get_pressed()
