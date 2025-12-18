@@ -82,6 +82,9 @@ def menu(score=0, high_score=0):
 
             if quit_btn.is_clicked(event):
                 return "quit"
+            
+            if how_btn.is_clicked(event):
+                return "how"
 
         screen.fill((240, 240, 240))
         screen.blit(bgM, (0, 0))
@@ -151,5 +154,7 @@ def menu(score=0, high_score=0):
         play_btn.draw(screen)
         settings_btn.draw(screen)
         quit_btn.draw(screen)
+        how_btn.draw(screen)
+
 
         pygame.display.flip()

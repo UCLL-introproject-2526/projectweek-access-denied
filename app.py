@@ -3,6 +3,7 @@ from loading import loade
 from menu import menu
 from game import main_game, load_assets
 from settings import settings
+from how_to_play import how_to_play
 
 def main():
     pygame.init()
@@ -31,6 +32,9 @@ def main():
 
         elif choice == "quit":
             break
+        
+        elif choice == "how":
+            how_to_play()
 
     pygame.quit()
 
