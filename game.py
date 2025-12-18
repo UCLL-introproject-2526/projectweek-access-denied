@@ -88,6 +88,11 @@ def load_assets(screen_size=(600, 720)):
 
 
 def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
+    # Damage / flicker system
+    damage_timer = 0
+    damage_duration = 2000  # 2 seconden in ms
+    flicker_interval = 150  # hoe snel hij flikkert
+
     paused = False
     screen_size = (600, 720)
     center_x = screen_size[0] // 2
@@ -321,10 +326,12 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
             # --- GEVAARLIJKE OBSTAKELS ---
             elif fig["type"] != "heart" and balloon_mask.overlap(fig_mask, offset):
+
                 current_time = pygame.time.get_ticks()
                 if current_time - last_hit_time >= hit_invincibility_duration:
                     last_hit_time = current_time
                     lives -= 1
+                    damage_timer = pygame.time.get_ticks()
 
                     if lives > 0:
                             # Slow down speed during invincibility
@@ -387,9 +394,9 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 try:
                     pygame.draw.rect(screen, (0, 255, 0), (fig["x"], fig["y"], 10, 10), 1)
                     pygame.draw.rect(screen, (255, 0, 0),
-                                     (fig["x"], fig["y"], fig["image"].get_width(), fig["image"].get_height()), 1)
+                                    (fig["x"], fig["y"], fig["image"].get_width(), fig["image"].get_height()), 1)
                     pygame.draw.rect(screen, (0, 0, 255),
-                                     (x, y, balloon.get_width(), balloon.get_height()), 1)
+                                    (x, y, balloon.get_width(), balloon.get_height()), 1)
                     font_dbg = pygame.font.Font(None, 20)
                     label = font_dbg.render(fig.get("type", ""), True, (255, 255, 255))
                     screen.blit(label, (fig["x"] + 12, fig["y"] + 2))
@@ -414,12 +421,22 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
         if keys[pygame.K_RIGHT]:
             x += speed
 
+        # Flikker
+        current_time = pygame.time.get_ticks()
+        is_damaged = current_time - damage_timer < damage_duration
+
+        draw_balloon = True
+        if is_damaged:
+            if (current_time // flicker_interval) % 2 == 0:
+                draw_balloon = False
+
         # Draw balloon (with optional hat)
-        if hat:
-            screen.blit(balloon, (x, y))
-            screen.blit(hat, (x + 3, y - 30))
-        else:
-            screen.blit(balloon, (x, y))
+        if draw_balloon:
+            if hat:
+                screen.blit(balloon, (x, y))
+                screen.blit(hat, (x + 3, y - 30))
+            else:
+                screen.blit(balloon, (x, y))
 
         pygame.display.flip()
         clock.tick(60)
