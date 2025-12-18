@@ -2,65 +2,7 @@ import pygame
 import random
 
 
-def load_assets(screen_size=(600, 720)):
-    """Load game assets with safe fallbacks and return an assets dict.
-    This loader avoids calling convert/convert_alpha so it can be used before a
-    display mode is set. Conversion is done later inside `main_game` after
-    setting the video mode.
-    """
-    w, h = screen_size
-    assets = {}
-
-    def _load(p, size=None, alpha=True, fallback_color=(100, 100, 100, 255)):
-        try:
-            img = pygame.image.load(p)
-            if size:
-                img = pygame.transform.scale(img, size)
-            return img
-        except (FileNotFoundError, pygame.error) as e:
-            print(f"Warning: failed to load {p}: {e}")
-            if size is None:
-                size = (w, h)
-            surf = pygame.Surface(size, pygame.SRCALPHA)
-            surf.fill(fallback_color)
-            return surf
-
-    assets["background"] = _load("images/dungeon.png", (w, h), alpha=False)
-
-    fig_paths = [
-        "images/corridor_right_spiked.png",
-        "images/corridor_right.png",
-        "images/corridor_left_2.png",
-        "images/drie_eilanden_links.png",
-        "images/drie_eilanden_rechts.png",
-        "images/mini_eilanden_left_2.png",
-        "images/mini_eilanden_right_2.png",
-        "images/eilanden_right.png",
-        "images/eilanden_left.png",
-        "images/cube_spike.png",
-        "images/cube_spike_left.png",
-        "images/cube_spike_right.png",
-        "images/cube_spike_right.png",
-    ]
-    assets["fig_images"] = [_load(p, (600, 700)) for p in fig_paths]
-
-    assets["tube"] = _load("images/straight_tube_texture.png", (600, 700))
-    assets["balloon"] = _load("images/balloon.png")
-    assets["balloon_prepop"] = _load("images/balloon_prepop.png")
-    assets["balloon_pop"] = _load("images/balloon_pop.png")
-    assets["death_screen"] = _load("images/death_screen.png", (600, 720), alpha=False)
-
-    # optional assets
-    try:
-        assets["hat"] = pygame.image.load("images/kerstmuts.png")
-    except Exception:
-        assets["hat"] = None
-
-    assets["game_music"] = "sound/Floating-Dreams.mp3"
-    return assets
-
-
-def main_game(balloon_skin="normal", high_score=0, assets=None):
+def main_game(balloon_skin="normal", high_score=0):
     paused = False
     screen_size = (600, 720)
     center_x = screen_size[0] // 2
@@ -68,55 +10,63 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
 
-    # Use provided assets or load them now (loader avoids convert calls)
-    if assets is None:
-        assets = load_assets(screen_size)
+    background = pygame.image.load("images/dungeon.png").convert()
+    background = pygame.transform.scale(background, (600, 720))
 
-    # After creating a display, we can call convert/convert_alpha safely for speed
-    try:
-        assets["background"] = assets["background"].convert()
-    except Exception:
-        pass
+    # Load images
+    fig1 = pygame.image.load("images/corridor_right_spiked.png").convert_alpha()
+    fig1 = pygame.transform.scale(fig1, (600, 700))
 
-    for i, img in enumerate(assets["fig_images"]):
-        try:
-            assets["fig_images"][i] = img.convert_alpha()
-        except Exception:
-            pass
+    fig2 = pygame.image.load("images/corridor_right.png").convert_alpha()
+    fig2 = pygame.transform.scale(fig2, (600, 700))
 
-    try:
-        assets["tube"] = assets["tube"].convert_alpha()
-    except Exception:
-        pass
+    fig3 = pygame.image.load("images/corridor_left_2.png").convert_alpha()
+    fig3 = pygame.transform.scale(fig3, (600, 700))
 
-    try:
-        assets["balloon"] = assets["balloon"].convert_alpha()
-    except Exception:
-        pass
+    fig4 = pygame.image.load("images/drie_eilanden_links.png").convert_alpha()
+    fig4 = pygame.transform.scale(fig4, (600, 700))
 
-    for key in ("balloon_prepop", "balloon_pop", "death_screen"):
-        try:
-            assets[key] = assets[key].convert_alpha()
-        except Exception:
-            pass
+    fig5 = pygame.image.load("images/drie_eilanden_rechts.png").convert_alpha()
+    fig5 = pygame.transform.scale(fig5, (600, 700))
 
-    if assets.get("hat"):
-        try:
-            assets["hat"] = assets["hat"].convert_alpha()
-        except Exception:
-            pass
+    fig6 = pygame.image.load("images/mini_eilanden_left_2.png").convert_alpha()
+    fig6 = pygame.transform.scale(fig6, (600, 700))
 
-    # assign locals from assets
-    background = assets["background"]
-    fig_images = assets["fig_images"]
-    tube = assets["tube"]
-    balloon = assets["balloon"]
-    balloon_prepop = assets["balloon_prepop"]
-    balloon_pop = assets["balloon_pop"]
-    death_screen = assets["death_screen"]
-    # Only use the hat asset when the current skin requires it
-    hat = assets.get("hat") if balloon_skin == "xmas" else None
-    game_music = assets.get("game_music", None)
+    fig7 = pygame.image.load("images/mini_eilanden_right_2.png").convert_alpha()
+    fig7 = pygame.transform.scale(fig7, (600, 700))
+
+    fig8 = pygame.image.load("images/eilanden_right.png").convert_alpha()
+    fig8 = pygame.transform.scale(fig8, (600, 700))
+
+    fig9 = pygame.image.load("images/eilanden_left.png").convert_alpha()
+    fig9 = pygame.transform.scale(fig9, (600, 700))
+
+    fig10 = pygame.image.load("images/cube_spike.png").convert_alpha()
+    fig10 = pygame.transform.scale(fig10, (600, 700))
+
+    fig11 = pygame.image.load("images/cube_spike_left.png").convert_alpha()
+    fig11 = pygame.transform.scale(fig11, (600, 700))
+
+    fig12 = pygame.image.load("images/cube_spike_right.png").convert_alpha()
+    fig12 = pygame.transform.scale(fig12, (600, 700))
+
+    fig13 = pygame.image.load("images/cube_spike_right.png").convert_alpha()
+    fig13 = pygame.transform.scale(fig13, (600, 700))
+
+    tube = pygame.image.load("images/straight_tube_texture.png").convert_alpha()
+    tube = pygame.transform.scale(tube, (600, 700))
+
+    if balloon_skin == "xmas":
+        balloon = pygame.image.load("images/balloon.png").convert_alpha()
+        hat = pygame.image.load("images/kerstmuts.png").convert_alpha()
+    else:
+        balloon = pygame.image.load("images/balloon.png").convert_alpha()
+        hat = None
+
+    balloon_prepop = pygame.image.load("images/balloon_prepop.png").convert_alpha()
+    balloon_pop = pygame.image.load("images/balloon_pop.png").convert_alpha()
+    death_screen = pygame.image.load("images/death_screen.png")
+    death_screen = pygame.transform.scale(death_screen, (600, 720))
 
     x, y = 300, 500
     speed_level = 2
@@ -134,18 +84,11 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
     # --- INITIAL FIGURES ---
     figures = [
         {"image": tube, "x": 0, "y": 0, "type": "tube"},
-        {"image": random.choice(fig_images), "x": 0, "y": -700, "type": "spike"}
+        {"image": random.choice([fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8, fig9, fig10, fig11, fig12, fig13]), "x": 0, "y": -700, "type": "spike"}
     ]
 
     score = 0
     check_score = 10
-
-    # UI & debug state
-    debug = False  # toggle with D key
-    balloon_hitbox_height = 50
-    balloon_crop = pygame.Surface((44, balloon_hitbox_height), pygame.SRCALPHA)
-    font_hud = pygame.font.Font(None, 60)
-    score_text = font_hud.render(f"{score}", True, (255, 255, 255))
 
     # background offset
     bg_y = 0
@@ -158,8 +101,6 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     paused = not paused
-                elif event.key == pygame.K_d:
-                    debug = not debug
 
         screen.fill((255, 255, 255))
 
@@ -206,7 +147,7 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
             if fig["type"] == "spike" and fig["y"] > 0:
                 if not any(f["type"] == "spike" and f["y"] < 0 for f in figures):
                     figures.append({
-                        "image": random.choice(fig_images),
+                        "image": random.choice([fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8, fig9, fig10, fig11, fig12, fig13]),
                         "x": 0,
                         "y": -695,
                         "type": "spike"
@@ -234,14 +175,8 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
 
             # Collision check
             if balloon_mask.overlap(fig_mask, offset):
-                try:
-                    pygame.mixer.Sound("sound/balloon-pop.wav").play()
-                except Exception:
-                    pass
-                try:
-                    pygame.mixer.music.stop()
-                except Exception:
-                    pass
+                pygame.mixer.Sound("sound/balloon-pop.wav").play()
+                pygame.mixer.music.stop()
                 speed_level = 0
                 speed = 0
 
@@ -276,16 +211,19 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
             screen.blit(fig["image"], (fig["x"], fig["y"]))
 
             # --- DEBUG OVERLAY: markers and rects to help visualise positions ---
-            if debug:
-                try:
-                    pygame.draw.rect(screen, (0, 255, 0), (fig["x"], fig["y"], 10, 10), 1)
-                    pygame.draw.rect(screen, (255, 0, 0), (fig["x"], fig["y"], fig["image"].get_width(), fig["image"].get_height()), 1)
-                    pygame.draw.rect(screen, (0, 0, 255), (x, y, balloon.get_width(), balloon.get_height()), 1)
-                    font_dbg = pygame.font.Font(None, 20)
-                    label = font_dbg.render(fig.get("type", ""), True, (255, 255, 255))
-                    screen.blit(label, (fig["x"] + 12, fig["y"] + 2))
-                except Exception:
-                    pass
+            try:
+                # small origin marker at figure origin
+                pygame.draw.rect(screen, (0, 255, 0), (fig["x"], fig["y"], 10, 10), 1)
+                # bounding rect of the figure
+                pygame.draw.rect(screen, (255, 0, 0), (fig["x"], fig["y"], fig["image"].get_width(), fig["image"].get_height()), 1)
+                # balloon bounds
+                pygame.draw.rect(screen, (0, 0, 255), (x, y, balloon.get_width(), balloon.get_height()), 1)
+                # small type label
+                font_dbg = pygame.font.Font(None, 20)
+                label = font_dbg.render(fig.get("type", ""), True, (255, 255, 255))
+                screen.blit(label, (fig["x"] + 12, fig["y"] + 2))
+            except Exception:
+                pass
 
         # --- HUD ---
         font_hud = pygame.font.Font(None, 60)
@@ -316,3 +254,9 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
     if score > high_score:
         high_score = score
     return score, high_score
+
+
+if __name__ == "__main__":
+    pygame.init()
+    # Run the debug version directly so you can inspect the overlays
+    main_game()
