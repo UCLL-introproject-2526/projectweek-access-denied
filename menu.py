@@ -9,8 +9,8 @@ def menu(score=0, high_score=0):
     bgM = pygame.image.load("images/main_menu_screen.png")
     bgM = pygame.transform.scale(bgM, (WIDTH, HEIGHT))
     clock = pygame.time.Clock()
-    font = pygame.font.SysFont("arialblack", 30)
-    font_settings = pygame.font.SysFont("arialblack", 10)
+    font = pygame.font.SysFont("terminal", 60)
+    font_settings = pygame.font.SysFont("terminal", 20)
 
     play_btn = Button(150, 425, 300, 50, "PLAY", font)
     settings_btn = Button(10, 10, 100, 20, "SETTINGS", font_settings)
