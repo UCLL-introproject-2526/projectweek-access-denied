@@ -6,6 +6,9 @@ from settings import settings
 def main():
     pygame.init()
 
+    music_on = True
+    sfx_on = True
+
     balloon_skin = "normal"
     high_score = 0
     last_score = None
@@ -19,10 +22,11 @@ def main():
         choice = menu(score=last_score, high_score=high_score)
 
         if choice == "play":
-            last_score, high_score = main_game(balloon_skin, high_score, assets)
+            last_score, high_score = main_game(balloon_skin, high_score, assets, music_on, sfx_on)
 
         elif choice == "settings":
-            balloon_skin = settings(balloon_skin)
+            balloon_skin, music_on, sfx_on = settings(balloon_skin, music_on, sfx_on)
+
 
         elif choice == "quit":
             break
