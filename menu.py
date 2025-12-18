@@ -35,8 +35,16 @@ def menu(score=0, high_score=0):
         screen.fill((240, 240, 240))
         screen.blit(bgM, (0, 0))
 
+        #  Lees high score hier telkens opnieuw uit bestand
+        try:
+            with open("high_score.txt", "r") as f:
+                high_score = int(f.read())
+        except Exception:
+            high_score = 0
+
         # toon laatste score en high score
-        if score is not None:
+
+        if score:
             score_text = font.render(f"Last Score: {score}", True, (0, 0, 0))
             screen.blit(score_text, (190, 550))
         hs_text = font.render(f"High Score: {high_score}", True, (0, 0, 0))

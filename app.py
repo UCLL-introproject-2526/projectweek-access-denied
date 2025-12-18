@@ -1,4 +1,5 @@
 import pygame
+from loading import loade
 from menu import menu
 from game import main_game, load_assets
 from settings import settings
@@ -16,13 +17,13 @@ def main():
     # Load assets once and reuse them (safe loader)
     screen_size = (600, 720)
     assets = load_assets(screen_size)
-
+    loade()
     while True:
         # geef laatste score en high score mee aan menu
         choice = menu(score=last_score, high_score=high_score)
 
         if choice == "play":
-            last_score, high_score = main_game(balloon_skin, high_score, assets, music_on, sfx_on)
+            last_score = main_game(balloon_skin, assets, music_on, sfx_on)
 
         elif choice == "settings":
             balloon_skin, music_on, sfx_on = settings(balloon_skin, music_on, sfx_on)
