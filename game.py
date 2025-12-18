@@ -54,9 +54,16 @@ def load_assets(screen_size=(600, 720)):
         "images/crates1_left.png",
         "images/crates1_right.png",
         "images/mini_tube_spike_left.png",
-        "images/mini_tube_spike_right.png",
+        "images/mini_tube_spike_right.png"
     ]
+
+    boss_fig_paths = [
+        "images/mini_tube.png"
+    ]
+
     assets["fig_images"] = [_load(p, (600, 700)) for p in fig_paths]
+
+    assets["boss_fig_images"] = [_load(p, (600, 700)) for p in boss_fig_paths]
 
     assets["tube"] = _load("images/straight_tube_texture.png", (600, 700))
     assets["balloon"] = _load("images/balloon.png")
@@ -134,6 +141,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     # assign locals from assets
     background = assets["background"]
     fig_images = assets["fig_images"]
+    boss_levels = assets["boss_fig_images"]
     tube = assets["tube"]
     balloon = assets["balloon"]
     balloon_prepop = assets["balloon_prepop"]
@@ -143,7 +151,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     game_music = assets.get("game_music", None)
 
     x, y = 300, 500
-    speed_level = 2
+    speed_level = 3
     speed = speed_level * 0.8
 
     game_music = "sound/Floating-Dreams.mp3"
@@ -164,6 +172,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
     score = 0
     check_score = 10
+    BOSS_LEVEL_SCORE = 100
 
     # UI & debug state
     debug = False  # toggle with D key
@@ -245,7 +254,19 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 x = screen_size[0] - balloon.get_width()
             if x < 0:
                 x = 0
-                
+
+
+            #BOSS LEVEL
+            if score >= BOSS_LEVEL_SCORE:
+                if not any(f.get("type") == "boss" for f in figures):
+                    figures.append({
+                        "image": random.choice(boss_levels),
+                        "x": 0,
+                        "y": -700,
+                        "type": "boss"
+                    })
+                if fig["type"] == "boss" and fig["y"] > 720:
+                    figures.remove(fig)
 
             speed_level += 0.0002
             speed = speed_level * 0.8
