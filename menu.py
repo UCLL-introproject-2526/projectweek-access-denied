@@ -52,6 +52,14 @@ def menu(score=0, high_score=0):
         image=settings_icon
     )
 
+    # Settings button as image (question icon)
+    question_icon = pygame.image.load("images/question.png").convert_alpha()
+    question_icon = pygame.transform.scale(question_icon, (40, 40))
+    how_btn = Button(
+    WIDTH - 50, HEIGHT - 50, 40, 40, "", font,
+    image=question_icon
+    )
+    
     quit_btn = Button(
         150, 500, 300, 50, "QUIT", font,
         base_color=(200, 200, 200),
@@ -59,6 +67,7 @@ def menu(score=0, high_score=0):
         shadow_color=(30, 30, 30),
         text_shadow_color=(200, 200, 200)
     )
+    
 
     # Optional trophy icon for high score
     try:
