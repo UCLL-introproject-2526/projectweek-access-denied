@@ -63,9 +63,6 @@ def load_assets(screen_size=(600, 720)):
     ]
 
     assets["fig_images"] = [_load(p, (600, 700)) for p in fig_paths]
-
-    assets["boss_fig_images"] = [_load(p, (600, 700)) for p in boss_fig_paths]
-
     assets["tube"] = _load("images/straight_tube_texture.png", (600, 700))
     assets["balloon"] = _load("images/balloon.png")
     assets["balloon_prepop"] = _load("images/balloon_prepop.png")
@@ -152,7 +149,6 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     # assign locals from assets
     background = assets["background"]
     fig_images = assets["fig_images"]
-    boss_levels = assets["boss_fig_images"]
     tube = assets["tube"]
     balloon = assets["balloon"]
     heart_img = assets["heart"]
@@ -184,7 +180,6 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
     score = 0
     check_score = 10
-    BOSS_LEVEL_SCORE = 100
 
     # --- LIVES ---
     max_lives = 5
@@ -301,17 +296,6 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 x = 0
 
 
-            #BOSS LEVEL
-            if score >= BOSS_LEVEL_SCORE:
-                if not any(f.get("type") == "boss" for f in figures):
-                    figures.append({
-                        "image": random.choice(boss_levels),
-                        "x": 0,
-                        "y": -700,
-                        "type": "boss"
-                    })
-                if fig["type"] == "boss" and fig["y"] > 720:
-                    figures.remove(fig)
 
             speed_level += 0.0002
             speed = speed_level * 0.8
