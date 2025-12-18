@@ -1,6 +1,7 @@
 import pygame
 import random
 
+# Beter werkt deze shit
 
 def load_assets(screen_size=(600, 720)):
     """Load game assets with safe fallbacks and return an assets dict.
