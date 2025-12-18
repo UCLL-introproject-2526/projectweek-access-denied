@@ -14,7 +14,9 @@ def menu(score=0, high_score=0):
 
     play_btn = Button(150, 425, 300, 50, "PLAY", font)
     settings_btn = Button(10, 10, 100, 20, "SETTINGS", font_settings)
+    skins_btn = Button(490, 10, 100, 20, "SKINS", font_settings)
     quit_btn = Button(150, 500, 300, 50, "QUIT", font)
+
 
     while True:
         clock.tick(60)
@@ -28,6 +30,9 @@ def menu(score=0, high_score=0):
 
             if settings_btn.is_clicked(event):
                 return "settings"
+            
+            if skins_btn.is_clicked(event):
+                return "skins"
 
             if quit_btn.is_clicked(event):
                 return "quit"
@@ -44,6 +49,7 @@ def menu(score=0, high_score=0):
 
         play_btn.draw(screen)
         settings_btn.draw(screen)
+        skins_btn.draw(screen) 
         quit_btn.draw(screen)
 
         pygame.display.flip()
