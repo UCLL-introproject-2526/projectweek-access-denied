@@ -1,7 +1,24 @@
-import pygame
+import pygame, random
 from buttons import Button
 
 WIDTH, HEIGHT = 600, 720
+
+def load_balloon_images():
+    balloon_red = pygame.image.load("images/balloon_red.png").convert_alpha()
+    balloon_blue = pygame.image.load("images/balloon_blue.png").convert_alpha()
+    balloon_green = pygame.image.load("images/balloon_green.png").convert_alpha()
+    balloon_purple = pygame.image.load("images/balloon_purple.png").convert_alpha()
+    balloon_white = pygame.image.load("images/balloon_white.png").convert_alpha()
+
+    balloon_red = pygame.transform.scale(balloon_red, (44, 100))
+    balloon_blue = pygame.transform.scale(balloon_blue, (44, 100))
+    balloon_green = pygame.transform.scale(balloon_green, (44, 100))
+    balloon_purple = pygame.transform.scale(balloon_purple, (44, 100))
+    balloon_white = pygame.transform.scale(balloon_white, (44, 100))
+
+    balloons = [balloon_red, balloon_blue, balloon_green, balloon_purple, balloon_white]
+    return balloons
+
 
 def menu(score=0, high_score=0):
     pygame.event.clear()
@@ -12,6 +29,12 @@ def menu(score=0, high_score=0):
     font = pygame.font.SysFont("terminal", 60)
     font_settings = pygame.font.SysFont("terminal", 30)
     font_score = pygame.font.SysFont("terminal", 40)
+    balloons = load_balloon_images()
+
+    # --- Balloon system ---
+    active_balloons = []  # list of dicts: {"image": ..., "x": ..., "y": ...}
+    spawn_interval = 2000  # 2 seconds in ms
+    last_spawn_time = pygame.time.get_ticks()
 
     # Buttons
     play_btn = Button(
@@ -75,6 +98,21 @@ def menu(score=0, high_score=0):
                 score = int(f.read())
         except Exception:
             score = 0
+
+        # --- Balloon spawning system ---
+        now = pygame.time.get_ticks()
+        if now - last_spawn_time >= spawn_interval:
+            last_spawn_time = now
+            img = random.choice(balloons)
+            x_pos = random.randint(20, WIDTH - 60)  # random x within screen
+            active_balloons.append({"image": img, "x": x_pos, "y": HEIGHT})
+
+        # Update and draw balloons
+        for balloon in active_balloons[:]:
+            balloon["y"] -= 2  # move up
+            screen.blit(balloon["image"], (balloon["x"], balloon["y"]))
+            if balloon["y"] < -120:  # off screen
+                active_balloons.remove(balloon)
 
         # --- Centered Score Panel ---
         panel_width, panel_height = 350, 120

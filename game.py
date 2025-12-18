@@ -71,7 +71,7 @@ def load_assets(screen_size=(600, 720)):
 
     assets["fig_images"] = [_load(p, (600, 700)) for p in fig_paths]
     assets["tube"] = _load("images/straight_tube_texture.png", (600, 700))
-    assets["balloon"] = _load("images/balloon.png")
+    assets["balloon"] = _load("images/balloon_red.png")
     assets["balloon_prepop"] = _load("images/balloon_prepop.png")
     assets["balloon_pop"] = _load("images/balloon_pop.png")
     assets["heart"] = _load("images/heart.png", (30, 30))
@@ -193,7 +193,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     lives = 2
     level = 1
     last_hit_time = 0
-    hit_invincibility_duration = 1000  # ms = 1 seconde
+    hit_invincibility_duration = 2000  # ms = 1 seconde
 
 
 
@@ -246,17 +246,6 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
         screen.blit(background, (0, bg_y))
         screen.blit(background, (0, bg_y - screen_size[1]))
 
-        current_time = pygame.time.get_ticks()
-
-        if level >= 2 and current_time - last_heart_spawn >= heart_spawn_delay:
-            figures.append({
-                "image": heart_img,
-                "x": random.randint(100, 500),
-                "y": -40,
-                "type": "heart"
-            })
-            last_heart_spawn = current_time
-
 
 
         # --- MOVE AND DRAW FIGURES ---
@@ -294,6 +283,18 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
                 if score % 10 == 0:
                     level += 1
+
+            
+            current_time = pygame.time.get_ticks()
+
+            if level >= 2 and current_time - last_heart_spawn >= heart_spawn_delay:
+                figures.append({
+                    "image": heart_img,
+                    "x": random.randint(200, 400),
+                    "y": -40,
+                    "type": "heart"
+                })
+                last_heart_spawn = current_time
 
 
             # Balloon boundaries
