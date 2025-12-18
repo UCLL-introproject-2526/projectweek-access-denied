@@ -60,7 +60,7 @@ def load_assets(screen_size=(600, 720)):
     return assets
 
 
-def main_game(balloon_skin="normal", high_score=0, assets=None):
+def main_game(balloon_skin="normal", high_score=0, assets=None, music_on=True, sfx_on=True):
     paused = False
     screen_size = (600, 720)
     center_x = screen_size[0] // 2
@@ -125,11 +125,12 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
     game_music = "sound/Floating-Dreams.mp3"
 
     # Background music
-    try:
-        pygame.mixer.music.load(game_music)
-        pygame.mixer.music.play(-1)
-    except Exception:
-        pass
+    if music_on:
+        try:
+            pygame.mixer.music.load(game_music)
+            pygame.mixer.music.play(-1)
+        except Exception:
+            pass
 
     # --- INITIAL FIGURES ---
     figures = [
@@ -234,10 +235,11 @@ def main_game(balloon_skin="normal", high_score=0, assets=None):
 
             # Collision check
             if balloon_mask.overlap(fig_mask, offset):
-                try:
-                    pygame.mixer.Sound("sound/balloon-pop.wav").play()
-                except Exception:
-                    pass
+                if sfx_on:
+                    try:
+                        pygame.mixer.Sound("sound/balloon-pop.wav").play()
+                    except Exception:
+                        pass
                 try:
                     pygame.mixer.music.stop()
                 except Exception:
