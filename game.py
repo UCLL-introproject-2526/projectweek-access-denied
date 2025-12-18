@@ -50,7 +50,6 @@ def load_assets(screen_size=(600, 720)):
         "images/saw1_right.png",
         "images/saw1_left.png",
         "images/spike_bal.png",
-        "images/drie_ballen.png",
         "images/crates_mix.png",
         "images/crates1_left.png",
         "images/crates1_right.png",
