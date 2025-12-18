@@ -299,26 +299,21 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
             speed_level += 0.0002
             speed = speed_level * 0.8
 
+            # --- HARTJES OPPAKKEN ---
             if fig["type"] == "heart":
                 heart_mask = pygame.mask.from_surface(fig["image"])
                 if balloon_mask.overlap(heart_mask, offset):
                     if lives < max_lives:
                         lives += 1
                     figures.remove(fig)
-                    continue
+                    continue  # meteen verder met de volgende figuur
 
-
-            # Collision check
-            if balloon_mask.overlap(fig_mask, offset):
+            # --- GEVAARLIJKE OBSTAKELS ---
+            elif fig["type"] != "heart" and balloon_mask.overlap(fig_mask, offset):
                 current_time = pygame.time.get_ticks()
-
-                can_take_damage = (
-                    current_time - last_hit_time >= hit_invincibility_duration
-                )
-
-                if can_take_damage:
+                if current_time - last_hit_time >= hit_invincibility_duration:
                     last_hit_time = current_time
-                    lives -= 1
+                    lives -= 1  # verlies 1 leven
 
                     if sfx_on:
                         try:
@@ -326,20 +321,44 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                         except Exception:
                             pass
 
-                    # --- PLAYER STILL ALIVE ---
+                    # --- PLAYER IS NOG LEVEND ---
                     if lives > 0:
                         knockback = speed_level * 20
-
                         for f in figures:
                             f["y"] -= knockback
                             f["y"] = max(f["y"], -720)
 
-                    # --- PLAYER DEAD ---
-                    else:
-                        try:
-                            pygame.mixer.music.stop()
-                        except Exception:
-                            pass
+            # --- DEATH CHECK PAS HIER ---
+            if lives <= 0:
+                # toon prepop en pop
+                screen.blit(background, (0, bg_y))
+                screen.blit(background, (0, bg_y - screen_size[1]))
+                screen.blit(balloon_prepop, (x, y))
+                for f in figures:
+                    screen.blit(f["image"], (f["x"], f["y"]))
+                pygame.display.flip()
+                pygame.time.wait(25)
+
+                screen.blit(background, (0, bg_y))
+                screen.blit(background, (0, bg_y - screen_size[1]))
+                screen.blit(balloon_pop, (x, y))
+                for f in figures:
+                    screen.blit(f["image"], (f["x"], f["y"]))
+                pygame.display.flip()
+                pygame.time.wait(1000)
+
+                # death screen
+                screen.blit(death_screen, (0, 0))
+                pygame.display.flip()
+                pygame.time.wait(2000)
+
+                # update high score
+                if score > high_score:
+                    high_score = score
+                    with open("high_score.txt", "w") as f:
+                        f.write(str(high_score))
+                return score
+
 
 
 
