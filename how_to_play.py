@@ -7,12 +7,6 @@ def how_to_play():
     pygame.event.clear()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
-    if not pygame.mixer.music.get_busy():
-        try:
-            pygame.mixer.music.load("sound/menu_music.mp3")
-            pygame.mixer.music.play(-1)
-        except Exception:
-            pass
 
     # achtergrond = dezelfde als settings
     bg = pygame.image.load("images/main_menu_screen_nologo.png")
