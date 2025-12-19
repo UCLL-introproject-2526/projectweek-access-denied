@@ -27,10 +27,10 @@ def main():
             last_score = main_game(balloon_skin, assets, music_on, sfx_on)
 
         elif choice == "settings":
-            music_on, sfx_on = settings(music_on, sfx_on)
+            current_skin, music_on, sfx_on = settings(balloon_skin, music_on, sfx_on)
 
-        elif choice == "skins":
-            balloon_skin = skin(balloon_skin)
+        #elif choice == "skins":
+        #   balloon_skin = skin(balloon_skin)
             
         elif choice == "quit":
             break

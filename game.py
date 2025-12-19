@@ -75,7 +75,7 @@ def load_assets(screen_size=(600, 720)):
     assets["balloon_pop"] = _load("images/balloon_pop.png")
     assets["heart"] = _load("images/heart.png", (30, 30))
     assets["death_screen"] = _load("images/death_screen.png", (600, 720), alpha=False)
-
+    assets["hat"] = _load("images/kerstmuts.png", (40, 30))
     # optional assets
     try:
         assets["hat"] = pygame.image.load("images/kerstmuts.png")
@@ -162,17 +162,13 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     balloon_dict = {
         "normal": assets["balloon"],
         "xmas": assets["balloon"],
-        "blue": assets["blue_balloon"],
-        "green": assets["green_balloon"],
-        "purple": assets["purple_balloon"],
-        "white": assets["white_balloon"]
+
     }
     balloon = balloon_dict.get(balloon_skin, assets["balloon"])
     hat = assets.get("hat") if balloon_skin == "xmas" else None
 
     # --- Overige assets ---
     background = assets["background"]
-    sky_background = assets["sky_background"]
     fig_images = assets["fig_images"]
     tube = assets["tube"]
     balloon = assets["balloon"]

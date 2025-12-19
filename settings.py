@@ -3,7 +3,7 @@ from buttons import Button
 
 WIDTH, HEIGHT = 600, 720
 
-def settings(music_on, sfx_on):
+def settings(current_skin, music_on, sfx_on):
     pygame.event.clear()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     bgS = pygame.image.load("images/main_menu_screen_nologo.png")
@@ -11,12 +11,12 @@ def settings(music_on, sfx_on):
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("arialblack", 28)
 
-    
+    xmas_btn   = Button(150, 220, 300, 50, "XMAS HAT: OFF", font)
     music_btn = Button(150, 320, 300, 50, "MUSIC: ON", font)
     sfx_btn   = Button(150, 400, 300, 50, "SFX: ON", font)
     back_btn = Button(150, 560, 300, 50, "BACK", font)
 
-    
+    balloon_skin = current_skin
     while True:
         clock.tick(60)
 
@@ -25,7 +25,8 @@ def settings(music_on, sfx_on):
                 pygame.quit()
                 exit()
 
-            
+            if xmas_btn.is_clicked(event):
+                balloon_skin = "normal" if balloon_skin == "xmas" else "xmas"
             
             if music_btn.is_clicked(event):
                 music_on = not music_on
@@ -36,14 +37,14 @@ def settings(music_on, sfx_on):
 
 
             if back_btn.is_clicked(event):
-                return music_on, sfx_on
+                return balloon_skin, music_on, sfx_on
 
             
-        
+        xmas_btn.dynamic_color = (0, 200, 0) if balloon_skin == "xmas" else (200, 0, 0)
         music_btn.dynamic_color = (0, 200, 0) if music_on else (200, 0, 0)
         sfx_btn.dynamic_color   = (0, 200, 0) if sfx_on else (200, 0, 0)
 
-        
+        xmas_btn.text = f"XMAS HAT: {'ON' if balloon_skin == 'xmas' else 'OFF'}"
         music_btn.text = f"MUSIC: {'ON' if music_on else 'OFF'}"
         sfx_btn.text   = f"SFX: {'ON' if sfx_on else 'OFF'}"
 
@@ -52,7 +53,7 @@ def settings(music_on, sfx_on):
         title = font.render("SETTINGS", True, (255, 255, 255))
         screen.blit(title, (210, 150))
 
-        
+        xmas_btn.draw(screen)
         music_btn.draw(screen)
         sfx_btn.draw(screen)
         back_btn.draw(screen)
