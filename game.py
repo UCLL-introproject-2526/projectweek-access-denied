@@ -197,7 +197,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     lives = 1
     level = 1
     last_hit_time = 0
-    hit_invincibility_duration = 2000  # ms = 2 seconde
+    hit_invincibility_duration = 20000  # ms = 2 seconde
     invincible = False
     if not invincible:
         original_speed = speed_level
@@ -208,8 +208,8 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     debug = False  # toggle with D key
     balloon_hitbox_height = 50
     balloon_crop = pygame.Surface((44, balloon_hitbox_height), pygame.SRCALPHA)
-    font_hud = pygame.font.Font(None, 60)
-    font_gameover = pygame.font.Font(None, 60)
+    font_hud = pygame.font.SysFont("terminal", 60)
+    font_gameover = pygame.font.SysFont("terminal", 60)
     score_text = font_hud.render(f"{score}", True, (255, 255, 255))
 
     # background offset
