@@ -30,6 +30,8 @@ def settings(current_skin, music_on, sfx_on):
             
             if music_btn.is_clicked(event):
                 music_on = not music_on
+                if not music_on:
+                    pygame.mixer.music.stop()
                 
 
             if sfx_btn.is_clicked(event):

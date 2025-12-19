@@ -7,6 +7,7 @@ from how_to_play import how_to_play
 
 def main():
     pygame.init()
+    pygame.mixer.init()
     pygame.display.set_caption("🎈Bloon Crackers🎈")
 
     music_on = True
@@ -21,9 +22,10 @@ def main():
     loade()
     while True:
         # geef laatste score en high score mee aan menu
-        choice = menu(high_score=high_score)
+        choice = menu(music_on, high_score=high_score)
 
         if choice == "play":
+            pygame.mixer.music.stop()
             main_game(balloon_skin, assets, music_on, sfx_on)
 
         elif choice == "settings":
