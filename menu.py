@@ -25,6 +25,7 @@ def menu(music_on, score=0, high_score=0):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     if music_on and not pygame.mixer.music.get_busy():
         try:
+            pygame.mixer.music.stop()
             pygame.mixer.music.load("sound/menu_music.mp3")
             pygame.mixer.music.play(-1)
         except Exception:
