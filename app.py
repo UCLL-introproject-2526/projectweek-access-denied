@@ -24,6 +24,7 @@ def main():
         choice = menu(high_score=high_score)
 
         if choice == "play":
+            pygame.mixer.music.stop()
             main_game(balloon_skin, assets, music_on, sfx_on)
 
         elif choice == "settings":
