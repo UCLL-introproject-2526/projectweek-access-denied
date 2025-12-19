@@ -99,7 +99,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
     last_heart_spawn = pygame.time.get_ticks()
-    heart_spawn_delay = 10000  # 10 seconden
+    heart_spawn_delay = 20000  # 10 seconden
 
 
     try:
@@ -199,7 +199,8 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     last_hit_time = 0
     hit_invincibility_duration = 2000  # ms = 1 seconde
     invincible = False
-    original_speed = speed_level
+    if not invincible:
+        original_speed = speed_level
 
 
 
@@ -300,7 +301,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                     "y": -40,
                     "type": "heart"
                 })
-            last_heart_spawn = current_time
+                last_heart_spawn = current_time
 
 
             # Balloon boundaries
@@ -324,7 +325,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                     continue  # meteen verder met de volgende figuur
 
             # --- GEVAARLIJKE OBSTAKELS ---
-            elif fig["type"] != "heart" and balloon_mask.overlap(fig_mask, offset):
+            elif fig["type"] == "spike" and balloon_mask.overlap(fig_mask, offset) and not invincible:
 
                 current_time = pygame.time.get_ticks()
                 if current_time - last_hit_time >= hit_invincibility_duration:
