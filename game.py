@@ -73,7 +73,7 @@ def load_assets(screen_size=(600, 720)):
     assets["balloon"] = _load("images/balloon_red.png")
     assets["balloon_prepop"] = _load("images/balloon_prepop.png")
     assets["balloon_pop"] = _load("images/balloon_pop.png")
-    assets["heart"] = _load("images/heart.png", (30, 30))
+    assets["heart"] = _load("images/heart.png", (35, 35))
     assets["death_screen"] = _load("images/death_screen.png", (600, 720), alpha=False)
 
     # optional assets
