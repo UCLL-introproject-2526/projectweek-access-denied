@@ -194,13 +194,21 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
     # --- LIVES ---
     max_lives = 3
-    lives = 1
+    lives = 3
     level = 1
     last_hit_time = 0
     hit_invincibility_duration = 2000  # ms = 2 seconde
     invincible = False
     if not invincible:
         original_speed = speed_level
+
+
+    font_popup = pygame.font.SysFont("terminal", 40)
+    score_popup_text = None
+    score_popup_pos = (0, 0)
+    score_popup_start = 0
+    score_popup_duration = 1000  # 1 seconde
+
 
 
 
@@ -322,6 +330,12 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 if balloon_mask.overlap(heart_mask, offset):
                     if lives < max_lives:
                         lives += 1
+                    else:
+                        score += 250
+                        score_popup_text = font_popup.render("+250", True, (0, 180, 0))
+                        score_popup_pos = (x + 30, y - 20)
+                        score_popup_start = pygame.time.get_ticks()
+
                     figures.remove(fig)
                     continue  # meteen verder met de volgende figuur
 
@@ -357,7 +371,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                     try:
                         pygame.mixer.Sound("sound/balloon-pop.wav").play()
                     except Exception:
-                         pass
+                        pass
                 pygame.mixer.music.stop()
                 screen.blit(background, (0, bg_y))
                 screen.blit(background, (0, bg_y - screen_size[1]))
@@ -447,6 +461,14 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
                 screen.blit(hat, (x + 3, y - 30))
             else:
                 screen.blit(balloon, (x, y))
+
+        # --- SCORE POPUP (+250) ---
+        if score_popup_text:
+            if pygame.time.get_ticks() - score_popup_start < score_popup_duration:
+                screen.blit(score_popup_text, score_popup_pos)
+            else:
+                score_popup_text = None
+
 
         pygame.display.flip()
         clock.tick(60)
