@@ -99,7 +99,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
     last_heart_spawn = pygame.time.get_ticks()
-    heart_spawn_delay = 20000  # 10 seconden
+    heart_spawn_delay = 1000  # 10 seconden
 
 
     try:
@@ -194,10 +194,10 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
     # --- LIVES ---
     max_lives = 3
-    lives = 3
+    lives = 1
     level = 1
     last_hit_time = 0
-    hit_invincibility_duration = 2000  # ms = 1 seconde
+    hit_invincibility_duration = 2000  # ms = 2 seconde
     invincible = False
     if not invincible:
         original_speed = speed_level
@@ -352,7 +352,11 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
             # --- DEATH CHECK PAS HIER ---
             if lives <= 0:
                 # toon prepop en pop
-                pygame.mixer.Sound("sound/balloon-pop.wav").play()
+                if sfx_on:
+                    try:
+                        pygame.mixer.Sound("sound/balloon-pop.wav").play()
+                    except Exception:
+                         pass
                 pygame.mixer.music.stop()
                 screen.blit(background, (0, bg_y))
                 screen.blit(background, (0, bg_y - screen_size[1]))
