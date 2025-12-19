@@ -52,7 +52,7 @@ class Button:
         hovered = self.rect.collidepoint(mouse_pos)
 
         # Smooth hover animation
-        target_scale = 1.05 if hovered else 1.0
+        target_scale = 1.025 if hovered else 1.0
         self.current_scale += (target_scale - self.current_scale) * 0.2
 
         new_w = int(self.rect.width * self.current_scale)
