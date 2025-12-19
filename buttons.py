@@ -1,63 +1,73 @@
 import pygame
 
 class Button:
-    def __init__(self, x, y, width, height, text, font, color=(100, 100, 200)):
-        self.rect = pygame.Rect(x, y, width, height)
+    def __init__(self, x, y, w, h, text, font,
+                 base_color=(0, 0, 0),
+                 text_color=(255, 255, 255),
+                 text_shadow_color=(0, 0, 0),
+                 shadow_color=(0, 0, 0),
+                 image=None,
+                 dynamic_color=None
+                 ):
+        self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.font = font
-        self.dynamic_color = color
-        self.hovered = False
-        self.pressed = False
+        self.base_color = base_color
+        self.text_color = text_color
+        self.shadow_color = shadow_color
+        self.text_shadow_color = text_shadow_color
+        self.dynamic_color = dynamic_color
+        self.image = image  # optional image surface
 
-    # Hover check
-    def is_hovered(self, mouse_pos):
-        return self.rect.collidepoint(mouse_pos)
+        self.current_scale = 1.0
 
-    # Klik check
-    def is_clicked(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.is_hovered(pygame.mouse.get_pos()):
-            return True
-        return False
-
-    # Tekenen van de knop
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()
-        self.hovered = self.is_hovered(mouse_pos)
+        hovered = self.rect.collidepoint(mouse_pos)
 
-        # --- Offset voor 3D-effect ---
-        offset = 4 if self.hovered else 2
+        # Smooth hover animation
+        target_scale = 1.05 if hovered else 1.0
+        self.current_scale += (target_scale - self.current_scale) * 0.2
 
-        # --- Achtergrondschaduw (donkerder) ---
-        shadow_color = (30, 30, 30)
-        pygame.draw.rect(screen, shadow_color,
-                        (self.rect.x + offset, self.rect.y + offset, self.rect.width, self.rect.height),
-                        border_radius=8)
+        new_w = int(self.rect.width * self.current_scale)
+        new_h = int(self.rect.height * self.current_scale)
+        enlarged_rect = pygame.Rect(0, 0, new_w, new_h)
+        enlarged_rect.center = self.rect.center
 
-        # --- Lichte rand boven/links ---
-        top_left_color = (255, 255, 255)
-        pygame.draw.rect(screen, top_left_color,
-                        (self.rect.x, self.rect.y, self.rect.width, self.rect.height),
-                        border_radius=8)
+        # --- Shadow (only for text buttons, not image buttons) ---
+        if not self.image:
+            shadow_offset = int(3 * self.current_scale)
+            shadow_rect = enlarged_rect.copy()
+            shadow_rect.move_ip(shadow_offset, shadow_offset)
+            pygame.draw.rect(screen, self.shadow_color, shadow_rect, border_radius=12)
 
-        # --- Body van de knop ---
-        body_color = self.dynamic_color
-        if self.hovered:
-            # Lichter maken bij hover
-            body_color = tuple(min(255, c + 80) for c in body_color)
+        # --- Main button background (only if no image) ---
+        if not self.image:
+            # Use dynamic_color if set, otherwise fall back to base_color
+            color = self.dynamic_color if self.dynamic_color else self.base_color
+            pygame.draw.rect(screen, color, enlarged_rect, border_radius=12)
+            pygame.draw.rect(screen, (0, 0, 0), enlarged_rect, width=2, border_radius=12)
 
-        # Gradient voor bol effect
-        for i in range(self.rect.height):
-            ratio = i / self.rect.height
-            color = (
-                int(body_color[0] * (1 - ratio) + body_color[0]*0.8 * ratio),
-                int(body_color[1] * (1 - ratio) + body_color[1]*0.8 * ratio),
-                int(body_color[2] * (1 - ratio) + body_color[2]*0.8 * ratio)
+        # --- Draw image if provided ---
+        if self.image:
+            scaled_img = pygame.transform.smoothscale(self.image, (enlarged_rect.width, enlarged_rect.height))
+            screen.blit(scaled_img, enlarged_rect)
+        else:
+            # --- Text scaling ---
+            font_size = int(self.font.get_height() * self.current_scale)
+            scaled_font = pygame.font.SysFont(
+                self.font.get_name() if hasattr(self.font, "get_name") else None,
+                font_size
             )
-            pygame.draw.line(screen, color,
-                            (self.rect.x + 1, self.rect.y + 1 + i),
-                            (self.rect.x + self.rect.width - 2, self.rect.y + 1 + i))
+            text_surf = scaled_font.render(self.text, True, self.text_color)
+            shadow_surf = scaled_font.render(self.text, True, self.text_shadow_color)
+            shadow_rect = shadow_surf.get_rect(center=enlarged_rect.center)
+            screen.blit(shadow_surf, shadow_rect.move(2, 2))
+            screen.blit(text_surf, text_surf.get_rect(center=enlarged_rect.center))
 
-        # --- Tekst centreren ---
-        text_surf = self.font.render(self.text, True, (0, 0, 0))
-        text_rect = text_surf.get_rect(center=self.rect.center)
-        screen.blit(text_surf, text_rect)
+    def is_clicked(self, event):
+        return (
+            event.type == pygame.MOUSEBUTTONDOWN
+            and event.button == 1
+            and self.rect.collidepoint(event.pos)
+        )
