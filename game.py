@@ -194,7 +194,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     # --- Initial figures ---
     figures = [
         {"image": tube, "x": 0, "y": 0, "type": "tube"},
-        {"image": random.choice(fig_images), "x": 0, "y": -700, "type": "spike"}
+        {"image": random.choice(fig_images), "x": 0, "y": -695, "type": "spike"}
     ]
 
     score = 0
@@ -202,7 +202,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
     # --- LIVES ---
     max_lives = 3
-    lives = 3
+    lives = 2
     level = 1
     last_hit_time = 0
     hit_invincibility_duration = 2000  # ms = 2 seconde
