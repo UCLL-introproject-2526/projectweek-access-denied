@@ -7,7 +7,7 @@ from how_to_play import how_to_play
 
 def main():
     pygame.init()
-    pygame.display.set_caption("Bloon Crackers")
+    pygame.display.set_caption("🎈Bloon Crackers🎈")
 
     music_on = True
     sfx_on = True
