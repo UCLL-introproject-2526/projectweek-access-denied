@@ -209,6 +209,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     balloon_hitbox_height = 50
     balloon_crop = pygame.Surface((44, balloon_hitbox_height), pygame.SRCALPHA)
     font_hud = pygame.font.Font(None, 60)
+    font_gameover = pygame.font.Font(None, 60)
     score_text = font_hud.render(f"{score}", True, (255, 255, 255))
 
     # background offset
@@ -372,6 +373,11 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
 
                 # death screen
                 screen.blit(death_screen, (0, 0))
+
+                score_text = font_gameover.render(f"Score: {score}", True, (255, 255, 255))
+                score_rect = score_text.get_rect(center=(screen_size[0] // 2, 500))
+                screen.blit(score_text, score_rect)
+
                 pygame.display.flip()
                 pygame.time.wait(2000)
 
