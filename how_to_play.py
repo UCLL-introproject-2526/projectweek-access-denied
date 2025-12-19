@@ -17,7 +17,14 @@ def how_to_play():
     how_img = pygame.transform.scale(how_img, (WIDTH, HEIGHT))
 
     font = pygame.font.SysFont("arialblack", 15)
-    back_btn = Button (10, 650, 150, 20, "BACK", font)
+    
+    x_icon = pygame.image.load("images/x.png").convert_alpha()
+    x_icon = pygame.transform.scale(x_icon, (40, 40))
+    back_btn = Button(
+        10, 10, 40, 40, "", font,
+        image=x_icon
+    )
+
 
     while True:
         clock.tick(60)

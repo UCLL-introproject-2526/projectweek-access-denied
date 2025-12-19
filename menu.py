@@ -24,23 +24,16 @@ def load_balloon_images():
     return balloons
 
 
-def menu(score=0, high_score=0):
+def menu(music_on, score=0, high_score=0):
     pygame.event.clear()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Balloon Game")
-
-    clock = pygame.time.Clock()
-
-    # ----------------------------------
-    # MUSIC
-    # ----------------------------------
-    pygame.mixer.music.load("sound/menu_music.mp3")
-    pygame.mixer.music.set_volume(0.4)
-    pygame.mixer.music.play(-1)
-
-    # ----------------------------------
-    # ASSETS
-    # ----------------------------------
+    if music_on and not pygame.mixer.music.get_busy():
+        try:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("sound/menu_music.mp3")
+            pygame.mixer.music.play(-1)
+        except Exception:
+            pass
     bgM = pygame.image.load("images/main_menu_screen.png")
     bgM = pygame.transform.scale(bgM, (WIDTH, HEIGHT))
 
