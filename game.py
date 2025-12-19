@@ -99,7 +99,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
     last_heart_spawn = pygame.time.get_ticks()
-    heart_spawn_delay = 1000  # 10 seconden
+    heart_spawn_delay = 20000  # 20 seconden
 
 
     try:
@@ -197,7 +197,7 @@ def main_game(balloon_skin="normal", assets=None, music_on=True, sfx_on=True):
     lives = 1
     level = 1
     last_hit_time = 0
-    hit_invincibility_duration = 20000  # ms = 2 seconde
+    hit_invincibility_duration = 2000  # ms = 2 seconde
     invincible = False
     if not invincible:
         original_speed = speed_level
